@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.requireNotZero;
+import static nl.dannyvanheumen.joldilocks.Ed448.A;
+import static nl.dannyvanheumen.joldilocks.Ed448.D;
 
 /**
  * ExtendedPoint is a point in Extended Homogenous Projective representation.
@@ -13,7 +15,7 @@ import static nl.dannyvanheumen.joldilocks.BigIntegers.requireNotZero;
 // TODO Consider replacing with custom bigint class for computation speed.
 // TODO Use of BigInteger coords, NOT CONSTANT TIME.
 // TODO Add base point when necessary.
-final class ExtendedPoint {
+final class ExtendedPoint implements Point<ExtendedPoint> {
 
     /**
      * Identity point.
@@ -76,8 +78,9 @@ final class ExtendedPoint {
      *
      * @return Returns X coordinate.
      */
+    @Override
     @Nonnull
-    BigInteger x() {
+    public BigInteger x() {
         return this.x.divide(this.z);
     }
 
@@ -86,8 +89,9 @@ final class ExtendedPoint {
      *
      * @return Returns Y coordinate.
      */
+    @Override
     @Nonnull
-    BigInteger y() {
+    public BigInteger y() {
         return this.y.divide(this.z);
     }
 
@@ -96,8 +100,9 @@ final class ExtendedPoint {
      *
      * @return Returns the inverted point.
      */
+    @Override
     @Nonnull
-    ExtendedPoint negate() {
+    public ExtendedPoint negate() {
         return new ExtendedPoint(this.x.negate(), this.y, this.z, this.t);
     }
 
@@ -107,16 +112,17 @@ final class ExtendedPoint {
      * @param p2 The second point.
      * @return Returns addition of this and the provided point.
      */
+    @Override
     @Nonnull
-    ExtendedPoint add(final ExtendedPoint p2) {
+    public ExtendedPoint add(final ExtendedPoint p2) {
         final BigInteger a = this.x.multiply(p2.x);
         final BigInteger b = this.y.multiply(p2.y);
-        final BigInteger c = this.t.multiply(Ed448.D).multiply(p2.t);
+        final BigInteger c = this.t.multiply(D).multiply(p2.t);
         final BigInteger d = this.z.multiply(p2.z);
         final BigInteger e = this.x.add(this.y).multiply(p2.x.add(p2.y)).subtract(a).subtract(b);
         final BigInteger f = d.subtract(c);
         final BigInteger g = d.add(c);
-        final BigInteger h = b.subtract(Ed448.A.multiply(a));
+        final BigInteger h = b.subtract(A.multiply(a));
         final BigInteger resultX = e.multiply(f);
         final BigInteger resultY = g.multiply(h);
         final BigInteger resultT = e.multiply(h);

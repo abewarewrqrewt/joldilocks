@@ -1,6 +1,5 @@
 package nl.dannyvanheumen.joldilocks;
 
-import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
