@@ -2,6 +2,9 @@ package nl.dannyvanheumen.joldilocks;
 
 import javax.annotation.Nonnull;
 
+import java.math.BigInteger;
+
+import static java.util.Objects.requireNonNull;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
 import static nl.dannyvanheumen.joldilocks.Crypto.pseudoRandomFunction;
 
@@ -13,40 +16,39 @@ final class PrivateKey {
 
     // FIXME assign correct lengths for secret, public and symmetric parts.
     private static final int LENGTH_SECRET_KEY_BYTES = 0;
-    private static final int LENGTH_PUBLIC_KEY_BYTES = 0;
     private static final int LENGTH_SYMMETRIC_KEY_BYTES = 0;
 
-    private final byte[] secretKey;
-    private final byte[] publicKey;
-    private final byte[] symmetricKey;
+    private final BigInteger secretKey;
+    private final Point<?> publicKey;
+    private final BigInteger symmetricKey;
 
-    private PrivateKey(final byte[] secretKey, final byte[] publicKey, final byte[] symmetricKey) {
-        this.secretKey = requireLengthExactly(secretKey, LENGTH_SECRET_KEY_BYTES);
-        this.publicKey = requireLengthExactly(publicKey, LENGTH_PUBLIC_KEY_BYTES);
-        this.symmetricKey = requireLengthExactly(symmetricKey, LENGTH_SYMMETRIC_KEY_BYTES);
+    private PrivateKey(final BigInteger secretKey, final Point<?> publicKey, final BigInteger symmetricKey) {
+        this.secretKey = requireNonNull(secretKey);
+        this.publicKey = requireNonNull(publicKey);
+        this.symmetricKey = requireNonNull(symmetricKey);
     }
 
     @Nonnull
-    static PrivateKey deriveFromSymmetricKey(final byte[] symmetricKey) {
-        requireLengthExactly(symmetricKey, LENGTH_SYMMETRIC_KEY_BYTES);
-        final byte[] result = pseudoRandomFunction(symmetricKey);
-        // FIXME derive secret part
-        // FIXME derive public part
-        return new PrivateKey(null, null, symmetricKey);
+    static PrivateKey deriveFromSymmetricKey(final byte[] symmetricKeyBytes) {
+        final BigInteger symmetricKey = new BigInteger(requireLengthExactly(symmetricKeyBytes, LENGTH_SYMMETRIC_KEY_BYTES));
+        final byte[] secretKeyBytes = requireLengthExactly(pseudoRandomFunction(symmetricKeyBytes), LENGTH_SECRET_KEY_BYTES);
+        final BigInteger secretKey = new BigInteger(secretKeyBytes).mod(Ed448.MODULUS);
+        final Point<?> publicKey = Curve.multiplyByBase(secretKey);
+        return new PrivateKey(secretKey, publicKey, symmetricKey);
     }
 
     @Nonnull
-    byte[] secretKey() {
-        return this.secretKey.clone();
+    BigInteger secretKey() {
+        return this.secretKey;
     }
 
     @Nonnull
-    byte[] publicKey() {
-        return this.publicKey.clone();
+    Point<?> publicKey() {
+        return this.publicKey;
     }
 
     @Nonnull
-    byte[] symmetricKey() {
-        return this.symmetricKey.clone();
+    BigInteger symmetricKey() {
+        return this.symmetricKey;
     }
 }

@@ -2,6 +2,9 @@ package nl.dannyvanheumen.joldilocks;
 
 import java.math.BigInteger;
 
+/**
+ * Utilities for big integers.
+ */
 final class BigIntegers {
 
     private BigIntegers() {

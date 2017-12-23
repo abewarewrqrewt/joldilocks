@@ -1,5 +1,6 @@
 package nl.dannyvanheumen.joldilocks;
 
+import javax.annotation.Nonnull;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
@@ -25,5 +26,17 @@ final class Curve {
         // (1 + d*x^2*y^2) - x^2 - y^2 = 0
         final BigInteger result = ONE.add(D.multiply(xx).multiply(yy)).subtract(xx).subtract(yy);
         return BigInteger.ZERO.equals(result);
+    }
+
+    /**
+     * Multiply scalar (e.g. secret key) by (pre-computed) base in order to derive a new point on the curve.
+     *
+     * @param scalar The scalar value, e.g. secret key.
+     * @return Returns a point that is the result of the multiplication with the base.
+     */
+    // FIXME Use (and implemented) pre-computed base for ECDH calculations. (Is this correct?)
+    @Nonnull
+    static Point<?> multiplyByBase(final BigInteger scalar) {
+        return null;
     }
 }

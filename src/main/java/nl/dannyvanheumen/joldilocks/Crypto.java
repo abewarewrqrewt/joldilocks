@@ -4,16 +4,20 @@ import org.bouncycastle.crypto.digests.SHA512Digest;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Cryptographically oriented utility functions.
+ */
 final class Crypto {
 
     private static final int LENGTH_SHA512_HASH_BYTES = 64;
 
-    private static final byte[] PREFIX_DERIVEPK = new byte[] { 'd', 'e', 'r', 'i', 'v', 'e', 'p', 'k'};
+    private static final byte[] PREFIX_DERIVEPK = new byte[]{'d', 'e', 'r', 'i', 'v', 'e', 'p', 'k'};
 
     private Crypto() {
         // No need to instantiate utility class.
     }
 
+    // TODO Consider renaming this as it is used to derive the secret key from input bytes.
     @Nonnull
     static byte[] pseudoRandomFunction(final byte[] input) {
         final byte[] result = new byte[LENGTH_SHA512_HASH_BYTES];

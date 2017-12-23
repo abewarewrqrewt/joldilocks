@@ -1,6 +1,7 @@
 package nl.dannyvanheumen.joldilocks;
 
 import javax.annotation.Nonnull;
+import java.security.MessageDigest;
 
 final class ByteArrays {
 
@@ -21,5 +22,17 @@ final class ByteArrays {
             throw new IllegalArgumentException("Length of array is expected to be exactly " + length + ", but is in fact " + data.length);
         }
         return data;
+    }
+
+    /**
+     * Constant-time equality test for byte-arrays.
+     *
+     * @param a1 Array 1 in comparison
+     * @param a2 Array 2 in comparison
+     * @return Returns true if arrays are equal (either both null or both have equal contents), or false otherwise.
+     */
+    // FIXME add unit tests, can we reasonably test constant-time-ness?
+    static boolean equalsConstantTime(final byte[] a1, final byte[] a2) {
+        return MessageDigest.isEqual(a1, a2);
     }
 }

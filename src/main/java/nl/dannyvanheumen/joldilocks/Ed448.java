@@ -8,7 +8,7 @@ import java.security.SecureRandom;
  */
 public final class Ed448 {
 
-    // FIXME Is this correct? For Extended representation we need to define an 'a'. We assume 1 for now. (This is probably wrong, somewhere in the Ed448-Goldilocks paper it is described that -1 is used.)
+    // NOTE: Page 5 of Decaf paper describes how they take "Untwisted" (Edwards Curve [sic]) to mean a = 1.
     static final BigInteger A = BigInteger.ONE;
 
     static final int LENGTH_SCALAR_BITS = 448;
