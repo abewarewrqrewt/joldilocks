@@ -21,9 +21,9 @@ import static nl.dannyvanheumen.joldilocks.Ed448.D;
 final class ExtendedPoint implements Point<ExtendedPoint> {
 
     /**
-     * Identity point.
+     * Identity point in Extended Homogeneous Projective representation.
      */
-    static final ExtendedPoint IDENTITY = new ExtendedPoint(ZERO, ONE, ONE, ZERO);
+    private static final ExtendedPoint IDENTITY = new ExtendedPoint(ZERO, ONE, ONE, ZERO);
 
     private static final BigInteger MINUS_TWO = BigInteger.valueOf(-2);
     private static final BigInteger FOUR = BigInteger.valueOf(4);
@@ -42,6 +42,9 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
      */
     @Nonnull
     static ExtendedPoint fromEdwards(final BigInteger x, final BigInteger y) {
+        if (ZERO.equals(x) && ONE.equals(y)) {
+            return IDENTITY;
+        }
         return new ExtendedPoint(x, y, ONE, x.multiply(y));
     }
 
