@@ -8,27 +8,27 @@ import java.math.BigInteger;
  * <p>
  * Several implementations of the Point interface exist for efficiency reasons.
  *
- * @param <P> The specific type of point implementation.
+ * @param <T> The specific type of point implementation.
  */
 // TODO consider making public
-interface Point<P extends Point> {
+interface Point<T extends Point> {
 
     /**
-     * The X-coordinate of the point.
+     * The Edwards X-coordinate of the point.
      * <p>
      * Note that this need not be a simple memory retrieval (constant-time), depending on the type of representation of a point.
      *
-     * @return Returns the scalar value representing the X-coordinate.
+     * @return Returns the scalar value representing the Edwards X-coordinate.
      */
     @Nonnull
     BigInteger x();
 
     /**
-     * The Y-coordinate of the point.
+     * The Edwards Y-coordinate of the point.
      * <p>
      * Note that this need not be a simple memory retrieval (constant-time), depending on the type of representation of a point.
      *
-     * @return Returns the scalar value representing the Y-coordinate.
+     * @return Returns the scalar value representing the Edwards Y-coordinate.
      */
     @Nonnull
     BigInteger y();
@@ -39,7 +39,7 @@ interface Point<P extends Point> {
      * @return Returns the inverted point.
      */
     @Nonnull
-    P negate();
+    T negate();
 
     /**
      * Add two points together.
@@ -48,7 +48,7 @@ interface Point<P extends Point> {
      * @return Returns addition of this and the provided point.
      */
     @Nonnull
-    P add(P p);
+    T add(T p);
 
     /**
      * Double the point (by multiplying it with itself).
@@ -56,5 +56,5 @@ interface Point<P extends Point> {
      * @return Returns the doubled point.
      */
     @Nonnull
-    P doubling();
+    T doubling();
 }
