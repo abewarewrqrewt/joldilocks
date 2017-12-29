@@ -125,6 +125,9 @@ final class ExtendedPoint implements Point {
      * @param t parameter T
      */
     private ExtendedPoint(final BigInteger x, final BigInteger y, final BigInteger z, final BigInteger t) {
+        if (!t.equals(x.multiply(y).divide(z))) {
+            throw new IllegalArgumentException("Incorrect composition of scalars for ExtendedPoint state.");
+        }
         this.x = requireNonNull(x);
         this.y = requireNonNull(y);
         this.z = requireNotZero(z);
