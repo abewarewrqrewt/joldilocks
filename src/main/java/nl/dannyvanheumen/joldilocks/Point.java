@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * @param <T> The specific type of point implementation.
  */
 // TODO consider making public
-interface Point<T extends Point> {
+interface Point {
 
     /**
      * The Edwards X-coordinate of the point.
@@ -39,7 +39,7 @@ interface Point<T extends Point> {
      * @return Returns the inverted point.
      */
     @Nonnull
-    T negate();
+    Point negate();
 
     /**
      * Add two points together.
@@ -48,7 +48,7 @@ interface Point<T extends Point> {
      * @return Returns addition of this and the provided point.
      */
     @Nonnull
-    T add(T p);
+    <T extends Point> T add(T p);
 
     /**
      * Double the point (by multiplying it with itself).
@@ -56,5 +56,5 @@ interface Point<T extends Point> {
      * @return Returns the doubled point.
      */
     @Nonnull
-    T doubling();
+    Point doubling();
 }

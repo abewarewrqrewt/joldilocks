@@ -36,7 +36,7 @@ final class Curve {
      */
     // FIXME Use (and implemented) pre-computed base for ECDH calculations. (Is this correct?)
     @Nonnull
-    static Point<?> multiplyByBase(final BigInteger scalar) {
+    static Point multiplyByBase(final BigInteger scalar) {
         return null;
     }
 }

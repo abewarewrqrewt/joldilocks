@@ -19,10 +19,10 @@ final class PrivateKey {
     private static final int LENGTH_SYMMETRIC_KEY_BYTES = 0;
 
     private final BigInteger secretKey;
-    private final Point<?> publicKey;
+    private final Point publicKey;
     private final BigInteger symmetricKey;
 
-    private PrivateKey(final BigInteger secretKey, final Point<?> publicKey, final BigInteger symmetricKey) {
+    private PrivateKey(final BigInteger secretKey, final Point publicKey, final BigInteger symmetricKey) {
         this.secretKey = requireNonNull(secretKey);
         this.publicKey = requireNonNull(publicKey);
         this.symmetricKey = requireNonNull(symmetricKey);
@@ -33,7 +33,7 @@ final class PrivateKey {
         final BigInteger symmetricKey = new BigInteger(requireLengthExactly(symmetricKeyBytes, LENGTH_SYMMETRIC_KEY_BYTES));
         final byte[] secretKeyBytes = requireLengthExactly(pseudoRandomFunction(symmetricKeyBytes), LENGTH_SECRET_KEY_BYTES);
         final BigInteger secretKey = new BigInteger(secretKeyBytes).mod(Ed448.MODULUS);
-        final Point<?> publicKey = Curve.multiplyByBase(secretKey);
+        final Point publicKey = Curve.multiplyByBase(secretKey);
         return new PrivateKey(secretKey, publicKey, symmetricKey);
     }
 
@@ -43,7 +43,7 @@ final class PrivateKey {
     }
 
     @Nonnull
-    Point<?> publicKey() {
+    Point publicKey() {
         return this.publicKey;
     }
 

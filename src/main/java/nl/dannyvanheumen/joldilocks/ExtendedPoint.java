@@ -18,7 +18,7 @@ import static nl.dannyvanheumen.joldilocks.Ed448.D;
 // TODO Consider replacing with custom bigint class for computation speed.
 // TODO Use of BigInteger coords, NOT CONSTANT TIME.
 // TODO Add base point when necessary.
-final class ExtendedPoint implements Point<ExtendedPoint> {
+final class ExtendedPoint implements Point {
 
     /**
      * Identity point in Extended Homogeneous Projective representation.
@@ -46,6 +46,14 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
             return IDENTITY;
         }
         return new ExtendedPoint(x, y, ONE, x.multiply(y));
+    }
+
+    @Nonnull
+    static ExtendedPoint fromEdwards(Point other) {
+        if (other instanceof ExtendedPoint) {
+            return (ExtendedPoint)other;
+        }
+        return ExtendedPoint.fromEdwards(other.x(), other.y());
     }
 
     /**
@@ -141,7 +149,9 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
 
     @Override
     @Nonnull
-    public ExtendedPoint add(final ExtendedPoint p2) {
+    public ExtendedPoint add(final Point other) {
+        final ExtendedPoint p2 = ExtendedPoint.fromEdwards(other);
+
         final BigInteger a = this.x.multiply(p2.x);
         final BigInteger b = this.y.multiply(p2.y);
         final BigInteger c = this.t.multiply(D).multiply(p2.t);
