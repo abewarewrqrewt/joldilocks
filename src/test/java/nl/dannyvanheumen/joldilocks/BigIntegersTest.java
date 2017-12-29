@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
+import static java.math.BigInteger.ONE;
+import static java.math.BigInteger.TEN;
+import static java.math.BigInteger.ZERO;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
@@ -18,19 +21,19 @@ public class BigIntegersTest {
 
     @Test
     public void testRequireNotZeroActuallyCorrect() {
-        BigIntegers.requireNotZero(BigInteger.ONE);
+        BigIntegers.requireNotZero(ONE);
     }
 
     @Test
     public void testRequireNotZeroActuallyZero() {
         assertThrows(IllegalArgumentException.class, () -> {
-            BigIntegers.requireNotZero(BigInteger.ZERO);
+            BigIntegers.requireNotZero(ZERO);
         });
     }
 
     @Test
     public void testRequireNotZeroReturnsSameInstance() {
-        final BigInteger value = BigInteger.TEN;
+        final BigInteger value = TEN;
         assertSame(value, BigIntegers.requireNotZero(value));
     }
 }

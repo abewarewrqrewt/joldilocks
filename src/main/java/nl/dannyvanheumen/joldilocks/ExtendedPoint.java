@@ -57,6 +57,7 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
      * @param s Compressed-point scalar value.
      * @return Returns the point in Extended Homogeneous Coordinates representation.
      */
+    // FIXME verify that these are correct. It seems that this algorithm needs to be applied on Jacobi Quartic-type values.
     @Nonnull
     static ExtendedPoint decodeDecafCompressedPoint(final BigInteger s) {
         if (!s.equals(s.abs())) {
@@ -72,10 +73,10 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
             prelimV = ZERO;
         } else {
             final BigInteger[] sqrtV = testV.sqrtAndRemainder();
-            prelimV = sqrtV[0];
             if (!sqrtV[1].equals(ZERO)) {
                 throw new IllegalArgumentException("Illegal value for Decaf compressed point.");
             }
+            prelimV = sqrtV[0];
         }
         final BigInteger v = u.multiply(prelimV).compareTo(ZERO) < 0 ? prelimV.negate() : prelimV;
         final BigInteger prelimW = v.multiply(s).multiply(TWO.subtract(z));
@@ -159,8 +160,20 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
     @Override
     @Nonnull
     public ExtendedPoint doubling() {
-        // FIXME Implement doubling for ExtendedPoint.
-        throw new UnsupportedOperationException("TODO");
+        final BigInteger a = this.x.multiply(this.x);
+        final BigInteger b = this.y.multiply(this.y);
+        final BigInteger c = TWO.multiply(this.z.multiply(this.z));
+        final BigInteger d = A.multiply(a);
+        final BigInteger xPlusY = this.x.add(this.y);
+        final BigInteger e = xPlusY.subtract(a).subtract(b);
+        final BigInteger g = d.add(b);
+        final BigInteger f = g.subtract(c);
+        final BigInteger h = d.subtract(b);
+        final BigInteger resultX = e.multiply(f);
+        final BigInteger resultY = g.multiply(h);
+        final BigInteger resultT = e.multiply(h);
+        final BigInteger resultZ = f.multiply(g);
+        return new ExtendedPoint(resultX, resultY, resultZ, resultT);
     }
 
     /**
@@ -169,17 +182,16 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
      * Encoding formula implemented from reference in "Decaf - Eliminating cofactors through point compression",
      * Appendix A.1.
      *
-     * @param p The point p in Extended Homogeneous Coordinates representation.
      * @return Returns compressed-point scalar value.
      */
-    @Nonnull
-    BigInteger encodeDecaf(final ExtendedPoint p) {
+    // FIXME verify that these are correct. It seems that this algorithm needs to be applied on Jacobi Quartic-type values.@Nonnull
+    BigInteger encodeDecaf() {
         final BigInteger aSubtractD = A.subtract(D);
         final BigInteger prelimR = ONE.divide((aSubtractD.multiply(this.z.add(this.y)).multiply(this.z.subtract(this.y))));
         final BigInteger u = aSubtractD.multiply(prelimR);
         final BigInteger r = MINUS_TWO.multiply(u).multiply(this.z).compareTo(ZERO) < 0 ? prelimR.negate() : prelimR;
         // Part 's' of the computation is split up in its nested components: s1, s2, s3. 's3' being the innermost part
-        // of the computation. This is done for readability.
+        // of the computation. This is done for readability of the code.
         final BigInteger s3 = A.multiply(this.z).multiply(this.x).subtract(D.multiply(this.y).multiply(this.t));
         final BigInteger s2 = r.multiply(s3).add(this.y);
         final BigInteger s1 = u.multiply(s2).divide(A);
