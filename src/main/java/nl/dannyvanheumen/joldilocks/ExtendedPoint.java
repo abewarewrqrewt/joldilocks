@@ -27,9 +27,24 @@ final class ExtendedPoint implements Point {
     private static final BigInteger MINUS_TWO = BigInteger.valueOf(-2);
     private static final BigInteger FOUR = BigInteger.valueOf(4);
 
+    /**
+     * Extended Homogeneous representation parameter X.
+     */
     private final BigInteger x;
+
+    /**
+     * Extended Homogeneous representation parameter Y.
+     */
     private final BigInteger y;
+
+    /**
+     * Extended Homogeneous representation parameter Z.
+     */
     private final BigInteger z;
+
+    /**
+     * Extended Homogeneous representation parameter T.
+     */
     private final BigInteger t;
 
     /**
