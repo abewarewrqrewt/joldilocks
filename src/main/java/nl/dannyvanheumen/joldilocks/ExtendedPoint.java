@@ -13,7 +13,7 @@ import static nl.dannyvanheumen.joldilocks.Ed448.A;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
 
 /**
- * ExtendedPoint is a point in Extended Homogenous Projective representation.
+ * ExtendedPoint is a point in Extended Homogeneous Projective representation.
  */
 // TODO Consider replacing with custom bigint class for computation speed.
 // TODO Use of BigInteger coords, NOT CONSTANT TIME.
@@ -174,6 +174,28 @@ final class ExtendedPoint implements Point<ExtendedPoint> {
         final BigInteger resultT = e.multiply(h);
         final BigInteger resultZ = f.multiply(g);
         return new ExtendedPoint(resultX, resultY, resultZ, resultT);
+    }
+
+    public ExtendedPoint triple() {
+        final BigInteger yy = this.y.multiply(this.y);
+        final BigInteger axx = A.multiply(this.x.multiply(this.x));
+        final BigInteger ap = yy.add(axx);
+        final BigInteger b = TWO.multiply(TWO.multiply(this.z.multiply(this.z)).subtract(ap));
+        final BigInteger xb = axx.multiply(b);
+        final BigInteger yb = yy.multiply(b);
+        final BigInteger aa = ap.multiply(yy.subtract(axx));
+        //      F = AA-yB
+        //      G = AA+xB
+        //      xE = X1*(yB+AA)
+        //      yH = Y1*(xB-AA)
+        //      zF = Z1*F
+        //      zG = Z1*G
+        //      X3 = xE*zF
+        //      Y3 = yH*zG
+        //      Z3 = zF*zG
+        //      T3 = xE*yH
+        // FIXME implement tripling.
+        throw new UnsupportedOperationException("TODO");
     }
 
     /**

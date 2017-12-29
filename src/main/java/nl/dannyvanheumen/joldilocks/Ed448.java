@@ -16,6 +16,14 @@ public final class Ed448 {
     static final int COFACTOR = 4;
 
     /**
+     * Base point for Ed448-Goldilocks.
+     */
+    static final Point P = ExtendedPoint.fromEdwards(
+            new BigInteger("224580040295924300187604334099896036246789641632564134246125461686950415467406032909029192869357953282578032075146446173674602635247710"),
+            new BigInteger("298819210078481492676017930443930673437544040154080242095928241372331506189835876003536878655418784733982303233503462500531545062832660")
+    );
+
+    /**
      * Prime p of the Ed448-Goldilocks curve. (Used as modulus.)
      */
     static final BigInteger MODULUS = new BigInteger("fffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
