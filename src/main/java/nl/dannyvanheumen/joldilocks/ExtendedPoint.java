@@ -17,7 +17,6 @@ import static nl.dannyvanheumen.joldilocks.Ed448.D;
  */
 // TODO Consider replacing with custom bigint class for computation speed.
 // TODO Use of BigInteger coords, NOT CONSTANT TIME.
-// TODO Add base point when necessary.
 final class ExtendedPoint implements Point {
 
     /**
@@ -48,12 +47,20 @@ final class ExtendedPoint implements Point {
         return new ExtendedPoint(x, y, ONE, x.multiply(y));
     }
 
+    /**
+     * Convert arbitrary Edwards point type to ExtendedPoint representation.
+     *
+     * @param other Some other Edwards point.
+     * @return Returns ExtendedPoint with same Edwards coordinates as input point.
+     */
     @Nonnull
-    static ExtendedPoint fromEdwards(Point other) {
+    static ExtendedPoint fromEdwards(final Point other) {
         if (other instanceof ExtendedPoint) {
-            return (ExtendedPoint)other;
+            return (ExtendedPoint) other;
         }
-        return ExtendedPoint.fromEdwards(other.x(), other.y());
+        final BigInteger x = other.x();
+        final BigInteger y = other.y();
+        return new ExtendedPoint(x, y, ONE, x.multiply(y));
     }
 
     /**
