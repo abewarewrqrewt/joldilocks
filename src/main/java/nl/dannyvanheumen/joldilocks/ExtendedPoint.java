@@ -194,18 +194,17 @@ final class ExtendedPoint implements Point {
         final BigInteger xb = axx.multiply(b);
         final BigInteger yb = yy.multiply(b);
         final BigInteger aa = ap.multiply(yy.subtract(axx));
-        //      F = AA-yB
-        //      G = AA+xB
-        //      xE = X1*(yB+AA)
-        //      yH = Y1*(xB-AA)
-        //      zF = Z1*F
-        //      zG = Z1*G
-        //      X3 = xE*zF
-        //      Y3 = yH*zG
-        //      Z3 = zF*zG
-        //      T3 = xE*yH
-        // FIXME implement tripling.
-        throw new UnsupportedOperationException("TODO");
+        final BigInteger f = aa.subtract(yb);
+        final BigInteger g = aa.add(xb);
+        final BigInteger xe = this.x.multiply(yb.add(aa));
+        final BigInteger yh = this.y.multiply(xb.subtract(aa));
+        final BigInteger zf = this.z.multiply(f);
+        final BigInteger zg = this.z.multiply(g);
+        final BigInteger resultX = xe.multiply(zf);
+        final BigInteger resultY = yh.multiply(zg);
+        final BigInteger resultZ = zf.multiply(zg);
+        final BigInteger resultT = xe.multiply(yh);
+        return new ExtendedPoint(resultX, resultY, resultZ, resultT);
     }
 
     /**
