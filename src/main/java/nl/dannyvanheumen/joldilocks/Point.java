@@ -7,8 +7,6 @@ import java.math.BigInteger;
  * The Point interface represents the generic Point on the Ed448-Goldilocks curve.
  * <p>
  * Several implementations of the Point interface exist for efficiency reasons.
- *
- * @param <T> The specific type of point implementation.
  */
 // TODO consider making public
 interface Point {
