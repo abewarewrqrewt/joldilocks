@@ -63,22 +63,6 @@ final class ExtendedPoint implements Point {
     }
 
     /**
-     * Convert arbitrary Edwards point type to ExtendedPoint representation.
-     *
-     * @param other Some other Edwards point.
-     * @return Returns ExtendedPoint with same Edwards coordinates as input point.
-     */
-    @Nonnull
-    static ExtendedPoint fromEdwards(final Point other) {
-        if (other instanceof ExtendedPoint) {
-            return (ExtendedPoint) other;
-        }
-        final BigInteger x = other.x();
-        final BigInteger y = other.y();
-        return new ExtendedPoint(x, y, ONE, x.multiply(y));
-    }
-
-    /**
      * Decaf- decode a point.
      * <p>
      * Decoding formula implemented from reference in "Decaf - Eliminating cofactors through point compression",
@@ -172,8 +156,7 @@ final class ExtendedPoint implements Point {
     @Override
     @Nonnull
     public ExtendedPoint add(final Point other) {
-        final ExtendedPoint p2 = ExtendedPoint.fromEdwards(other);
-
+        final ExtendedPoint p2 = Points.toExtended(other);
         final BigInteger a = this.x.multiply(p2.x);
         final BigInteger b = this.y.multiply(p2.y);
         final BigInteger c = this.t.multiply(D).multiply(p2.t);
