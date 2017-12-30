@@ -48,7 +48,7 @@ interface Point {
      * @return Returns addition of this and the provided point.
      */
     @Nonnull
-    <T extends Point> T add(Point p);
+    Point add(Point p);
 
     /**
      * Double the point (by multiplying it with itself).
