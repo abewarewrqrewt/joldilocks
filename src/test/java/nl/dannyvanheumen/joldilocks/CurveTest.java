@@ -6,6 +6,7 @@ import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
@@ -42,5 +43,10 @@ public class CurveTest {
     @Test
     public void testArbitraryPoint() {
         assertFalse(Curve.contains(ExtendedPoint.fromEdwards(BigInteger.valueOf(1234), BigInteger.valueOf(-856382))));
+    }
+
+    @Test
+    public void testBasePointIsOnCurve() {
+        assertTrue(Curve.contains(P), "Something is wrong as the base point is not considered to be on the curve. Not sure what is wrong yet.");
     }
 }
