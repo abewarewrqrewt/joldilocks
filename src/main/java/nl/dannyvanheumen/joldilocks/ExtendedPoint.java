@@ -4,13 +4,11 @@ import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import static java.math.BigInteger.ONE;
-import static java.math.BigInteger.TWO;
-import static java.math.BigInteger.ZERO;
+import static java.math.BigInteger.*;
 import static java.util.Objects.requireNonNull;
-import static nl.dannyvanheumen.joldilocks.BigIntegers.requireNotZero;
 import static nl.dannyvanheumen.joldilocks.Ed448.A;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
+import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
 
 /**
  * ExtendedPoint is a point in Extended Homogeneous Projective representation.

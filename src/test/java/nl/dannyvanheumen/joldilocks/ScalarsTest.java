@@ -7,33 +7,34 @@ import java.math.BigInteger;
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
-public class BigIntegersTest {
+public class ScalarsTest {
 
     @Test
     public void testRequireNotZeroForNullFails() {
         assertThrows(NullPointerException.class, () -> {
-            BigIntegers.requireNotZero(null);
+            requireNotZero(null);
         });
     }
 
     @Test
     public void testRequireNotZeroActuallyCorrect() {
-        BigIntegers.requireNotZero(ONE);
+        assertNotNull(requireNotZero(ONE));
     }
 
     @Test
     public void testRequireNotZeroActuallyZero() {
         assertThrows(IllegalArgumentException.class, () -> {
-            BigIntegers.requireNotZero(ZERO);
+            requireNotZero(ZERO);
         });
     }
 
     @Test
     public void testRequireNotZeroReturnsSameInstance() {
         final BigInteger value = TEN;
-        assertSame(value, BigIntegers.requireNotZero(value));
+        assertSame(value, requireNotZero(value));
     }
 }

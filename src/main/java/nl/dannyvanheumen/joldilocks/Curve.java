@@ -5,10 +5,12 @@ import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
+import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 
 /**
  * Curve is an untwisted Edwards curve (form: y^2 + x^2 = 1 + d * x^2 * y^2)
  */
+// TODO This should probably be merged with Ed448. Ed448 is basically the curve we're working with. So now two classes for same single concept.
 final class Curve {
 
     /**
@@ -24,8 +26,11 @@ final class Curve {
         final BigInteger yy = y.multiply(y);
 
         // (1 + d*x^2*y^2) - x^2 - y^2 = 0
-        final BigInteger result = ONE.add(D.multiply(xx).multiply(yy)).subtract(xx).subtract(yy);
-        return BigInteger.ZERO.equals(result);
+        final BigInteger lhs = xx.add(yy); //FIXME .mod(MODULUS);
+        System.err.println("LHS: " + lhs);
+        final BigInteger rhs = ONE.add(D.multiply(xx).multiply(yy)); //FIXME .mod(MODULUS);
+        System.err.println("RHS: " + rhs);
+        return lhs.compareTo(rhs) == 0;
     }
 
     /**
