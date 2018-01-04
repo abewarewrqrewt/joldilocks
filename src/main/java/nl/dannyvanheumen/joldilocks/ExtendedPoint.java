@@ -148,7 +148,7 @@ final class ExtendedPoint implements Point {
     @Override
     @Nonnull
     public ExtendedPoint negate() {
-        return new ExtendedPoint(this.x.negate(), this.y, this.z, this.t);
+        return new ExtendedPoint(this.x.negate(), this.y, this.z, this.t.negate());
     }
 
     @Override
