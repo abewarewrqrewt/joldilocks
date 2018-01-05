@@ -189,6 +189,7 @@ final class ExtendedPoint implements Point {
         return new ExtendedPoint(resultX, resultY, resultZ, resultT);
     }
 
+    @Nonnull
     public ExtendedPoint triple() {
         final BigInteger yy = this.y.multiply(this.y);
         final BigInteger axx = A.multiply(this.x.multiply(this.x));
@@ -219,6 +220,7 @@ final class ExtendedPoint implements Point {
      * @return Returns compressed-point scalar value.
      */
     // FIXME verify that these are correct. It seems that this algorithm needs to be applied on Jacobi Quartic-type values.@Nonnull
+    @Nonnull
     BigInteger encodeDecaf() {
         final BigInteger aSubtractD = A.subtract(D);
         final BigInteger prelimR = ONE.divide((aSubtractD.multiply(this.z.add(this.y)).multiply(this.z.subtract(this.y))));

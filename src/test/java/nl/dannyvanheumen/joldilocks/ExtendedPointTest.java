@@ -1,5 +1,6 @@
 package nl.dannyvanheumen.joldilocks;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static java.math.BigInteger.ONE;
@@ -12,16 +13,12 @@ public class ExtendedPointTest {
 
     @Test
     public void testPointConversionWithNullX() {
-        assertThrows(NullPointerException.class, () -> {
-            ExtendedPoint.fromEdwards(null, ZERO);
-        });
+        assertThrows(NullPointerException.class, () -> ExtendedPoint.fromEdwards(null, ZERO));
     }
 
     @Test
     public void testPointConversionWithNullY() {
-        assertThrows(NullPointerException.class, () -> {
-            ExtendedPoint.fromEdwards(ONE, null);
-        });
+        assertThrows(NullPointerException.class, () -> ExtendedPoint.fromEdwards(ONE, null));
     }
 
     @Test
@@ -66,6 +63,15 @@ public class ExtendedPointTest {
         final Point added = P.add(P);
         assertEquals(added.x(), doubled.x());
         assertEquals(added.y(), doubled.y());
+    }
+
+    @Disabled
+    @Test
+    public void testPointTriplingBase() {
+        final ExtendedPoint tripled = P.triple();
+        final ExtendedPoint tripleAdded = P.add(P).add(P);
+        assertEquals(tripled.x(), tripleAdded.x());
+        assertEquals(tripled.y(), tripleAdded.y());
     }
 
     @Test
