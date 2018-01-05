@@ -67,4 +67,11 @@ public class ExtendedPointTest {
         assertEquals(added.x(), doubled.x());
         assertEquals(added.y(), doubled.y());
     }
+
+    @Test
+    public void testPointNegation() {
+        final Point negativeP = P.negate();
+        assertNotNull(negativeP);
+        assertTrue(Curve.contains(negativeP));
+    }
 }
