@@ -22,7 +22,6 @@ final class Scalars {
      * @param value The serialized value of the scalar.
      * @return Returns scalar.
      */
-    // FIXME needs to be tested
     @Nonnull
     static BigInteger deserialize(final byte[] value) {
         requireLengthExactly(value, LENGTH_SCALAR_BYTES);
@@ -37,12 +36,11 @@ final class Scalars {
      * @param value Little-endian encoded scalar value.
      * @return Returns scalar.
      */
-    // FIXME needs to be tested
     @Nonnull
     private static BigInteger decodeLittleEndian(final byte[] value) {
         BigInteger sum = ZERO;
         for (int i = 0; i < value.length; i++) {
-            sum = sum.add(new BigInteger(value, i, 1).shiftLeft(8*i));
+            sum = sum.add(new BigInteger(1, value, i, 1).shiftLeft(8 * i));
         }
         return sum;
     }
@@ -53,6 +51,7 @@ final class Scalars {
      * @param value Value to be verified for zero. (null is not allowed)
      * @return Returns same value iff not zero.
      */
+    @Nonnull
     static BigInteger requireNotZero(final BigInteger value) {
         if (value.equals(BigInteger.ZERO)) {
             throw new IllegalArgumentException("Value is zero.");
