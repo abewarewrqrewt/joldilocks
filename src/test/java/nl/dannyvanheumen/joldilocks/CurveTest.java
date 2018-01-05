@@ -46,6 +46,12 @@ public class CurveTest {
     }
 
     @Test
+    public void testBasePointDeserialization() {
+        assertEquals(P.x(), new BigInteger("224580040295924300187604334099896036246789641632564134246125461686950415467406032909029192869357953282578032075146446173674602635247710"));
+        assertEquals(P.y(), new BigInteger("298819210078481492676017930443930673437544040154080242095928241372331506189835876003536878655418784733982303233503462500531545062832660"));
+    }
+
+    @Test
     public void testBasePointIsOnCurve() {
         assertTrue(Curve.contains(P), "Something is wrong as the base point is not considered to be on the curve. Not sure what is wrong yet.");
     }

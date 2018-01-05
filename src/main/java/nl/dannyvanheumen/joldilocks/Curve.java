@@ -20,17 +20,18 @@ final class Curve {
      * @return Returns true if it is contained in the curve.
      */
     static boolean contains(final Point p) {
+        // TODO: Check if we really need so many mod-operations
         final BigInteger x = p.x();
-        final BigInteger xx = x.multiply(x);
+        final BigInteger xx = x.multiply(x).mod(MODULUS);
         final BigInteger y = p.y();
-        final BigInteger yy = y.multiply(y);
+        final BigInteger yy = y.multiply(y).mod(MODULUS);
 
-        // (1 + d*x^2*y^2) - x^2 - y^2 = 0
-        final BigInteger lhs = xx.add(yy); //FIXME .mod(MODULUS);
-        System.err.println("LHS: " + lhs);
-        final BigInteger rhs = ONE.add(D.multiply(xx).multiply(yy)); //FIXME .mod(MODULUS);
-        System.err.println("RHS: " + rhs);
-        return lhs.compareTo(rhs) == 0;
+        final BigInteger dxx = D.multiply(xx).mod(MODULUS);
+        final BigInteger dxxyy = dxx.multiply(yy).mod(MODULUS);
+
+        final BigInteger left =  xx.add(yy).mod(MODULUS);
+        final BigInteger right= ONE.add(dxxyy).mod(MODULUS);
+        return left.compareTo(right) == 0;
     }
 
     /**
