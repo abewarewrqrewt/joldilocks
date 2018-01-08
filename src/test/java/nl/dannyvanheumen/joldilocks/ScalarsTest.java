@@ -19,9 +19,7 @@ public class ScalarsTest {
 
     @Test
     public void testRequireNotZeroForNullFails() {
-        assertThrows(NullPointerException.class, () -> {
-            requireNotZero(null);
-        });
+        assertThrows(NullPointerException.class, () -> requireNotZero(null));
     }
 
     @Test
@@ -31,9 +29,7 @@ public class ScalarsTest {
 
     @Test
     public void testRequireNotZeroActuallyZero() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            requireNotZero(ZERO);
-        });
+        assertThrows(IllegalArgumentException.class, () -> requireNotZero(ZERO));
     }
 
     @Test

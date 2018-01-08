@@ -7,6 +7,7 @@ import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("ConstantConditions")
 public class PointsTest {
 
     @Test

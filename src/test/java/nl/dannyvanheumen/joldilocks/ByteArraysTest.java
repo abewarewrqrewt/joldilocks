@@ -9,9 +9,7 @@ public class ByteArraysTest {
 
     @Test
     public void testRequireLengthExactlyNull() {
-        assertThrows(NullPointerException.class, () -> {
-            ByteArrays.requireLengthExactly(null, 10);
-        });
+        assertThrows(NullPointerException.class, () -> ByteArrays.requireLengthExactly(null, 10));
     }
 
     @Test
@@ -21,9 +19,7 @@ public class ByteArraysTest {
 
     @Test
     public void testRequireLengthExactlyBadLength() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            ByteArrays.requireLengthExactly(new byte[12], 11);
-        });
+        assertThrows(IllegalArgumentException.class, () -> ByteArrays.requireLengthExactly(new byte[12], 11));
     }
 
     @Test

@@ -14,9 +14,7 @@ public class CurveTest {
 
     @Test
     public void testContainsNullFails() {
-        assertThrows(NullPointerException.class, () -> {
-            Curve.contains(null);
-        });
+        assertThrows(NullPointerException.class, () -> Curve.contains(null));
     }
 
     @Test
