@@ -53,7 +53,7 @@ final class Scalars {
      */
     @Nonnull
     static BigInteger requireNotZero(final BigInteger value) {
-        if (value.equals(BigInteger.ZERO)) {
+        if (value.equals(ZERO)) {
             throw new IllegalArgumentException("Value is zero.");
         }
         return value;
