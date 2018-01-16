@@ -84,9 +84,9 @@ public interface Point {
         // encoding of the point, copy the least significant bit of the
         // x-coordinate to the most significant bit of the final octet."
         // -- RFC 8032
-        // FIXME Should we do a test for byte-array length to be exact? (Expected is 56 or 57 depending on type of scalar ...)
-        final byte[] encoded = Scalars.encodeLittleEndian(y);
-        final int leastSignificantBit = x.toByteArray()[0] & 0x1;
+        final byte[] encoded = new byte[ENCODED_LENGTH_BYTES];
+        Scalars.encodeLittleEndianTo(encoded, 0, y);
+        final int leastSignificantBit = Scalars.encodeLittleEndian(x)[0] & 0x1;
         encoded[ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
         return encoded;
     }

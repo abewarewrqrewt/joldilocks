@@ -48,6 +48,20 @@ final class Scalars {
     }
 
     /**
+     * Encode scalar value as little-endian to provided destination byte array.
+     *
+     * @param dst    Destination byte array.
+     * @param offset offset in array
+     * @param value  Value to encode.
+     */
+    static void encodeLittleEndianTo(final byte[] dst, final int offset, final BigInteger value) {
+        final byte[] bigEndianBytes = BigIntegers.asUnsignedByteArray(value);
+        for (int si = bigEndianBytes.length - 1, di = offset; si >= 0; si--) {
+            dst[di++] = bigEndianBytes[si];
+        }
+    }
+
+    /**
      * Decode little endian format for scalar values.
      *
      * @param value Little-endian encoded scalar value.

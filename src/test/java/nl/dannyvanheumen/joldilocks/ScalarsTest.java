@@ -12,6 +12,7 @@ import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
 import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndian;
+import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndianTo;
 import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,12 +71,6 @@ public class ScalarsTest {
     }
 
     @Test
-    public void testDecodeLittleEndian() {
-        final BigInteger expected = BigInteger.valueOf(4278322184L);
-        assertEquals(expected, decodeLittleEndian(new byte[]{(byte) 0x8, 0x4, 0x2, (byte) 0xff}));
-    }
-
-    @Test
     public void testEncodeLittleEndian() {
         final byte[] expected = new byte[]{0x8, 0x4, 0x2, (byte) 0xff};
         assertArrayEquals(expected, encodeLittleEndian(BigInteger.valueOf(4278322184L)));
@@ -92,6 +87,12 @@ public class ScalarsTest {
     }
 
     @Test
+    public void testDecodeLittleEndian() {
+        final BigInteger expected = BigInteger.valueOf(4278322184L);
+        assertEquals(expected, decodeLittleEndian(new byte[]{(byte) 0x8, 0x4, 0x2, (byte) 0xff}));
+    }
+
+    @Test
     public void testDecodeLittleEndianEmptyArray() {
         assertEquals(ZERO, decodeLittleEndian(new byte[0]));
     }
@@ -99,5 +100,44 @@ public class ScalarsTest {
     @Test
     public void testDecodeLittleEndianNullFails() {
         assertThrows(NullPointerException.class, () -> decodeLittleEndian(null));
+    }
+
+    @Test
+    public void testEncodeLittleEndianTo() {
+        final byte[] expected = new byte[]{0x8, 0x4, 0x2, (byte) 0xff};
+        final byte[] dst = new byte[4];
+        encodeLittleEndianTo(dst, 0, BigInteger.valueOf(4278322184L));
+        assertArrayEquals(expected, dst);
+    }
+
+    @Test
+    public void testEncodeLittleEndianToOffset() {
+        final byte[] expected = new byte[]{0, 0, 0x8, 0x4, 0x2, (byte) 0xff};
+        final byte[] dst = new byte[6];
+        encodeLittleEndianTo(dst, 2, BigInteger.valueOf(4278322184L));
+        assertArrayEquals(expected, dst);
+    }
+
+    @Test
+    public void testEncodeLittleEndianToNullValueFails() {
+        final byte[] dst = new byte[0];
+        assertThrows(NullPointerException.class, () -> encodeLittleEndianTo(dst, 0, null));
+    }
+
+    @Test
+    public void testEncodeLittleEndianToZero() {
+        final byte[] dst = new byte[0];
+        encodeLittleEndianTo(dst, 0, ZERO);
+        assertArrayEquals(new byte[0], dst);
+    }
+
+    @Test
+    public void testEncodeLittleEndianToNullDstFails() {
+        assertThrows(NullPointerException.class, () -> encodeLittleEndianTo(null, 0, ONE));
+    }
+
+    @Test
+    public void testEncodeLittleEndianToIllegalOffsetFails() {
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> encodeLittleEndianTo(new byte[0], -1, ONE));
     }
 }
