@@ -7,7 +7,7 @@ import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 
 /**
- * (Internal) utility methods for managing points and point representation conversions.
+ * Utility methods for managing points and point representation conversions.
  */
 final class Points {
 

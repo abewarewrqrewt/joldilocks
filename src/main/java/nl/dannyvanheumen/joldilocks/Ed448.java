@@ -7,9 +7,6 @@ import java.math.BigInteger;
  */
 public final class Ed448 {
 
-    private static final int LENGTH_SCALAR_BITS = 448;
-    static final int LENGTH_SCALAR_BYTES = LENGTH_SCALAR_BITS / 8;
-
     /**
      * Cofactor of Ed448-Goldilocks curve.
      */
