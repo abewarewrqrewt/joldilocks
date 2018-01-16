@@ -27,4 +27,28 @@ public class ByteArraysTest {
         final byte[] value = new byte[10];
         assertSame(value, ByteArrays.requireLengthExactly(value, 10));
     }
+
+    @Test
+    public void testConstantTimeEqualsCorrectlyReturnsTrue() {
+        final byte[] value = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+        assertTrue(ByteArrays.equalsConstantTime(value, value));
+    }
+
+    @Test
+    public void testConstantTimeEqualsCorrectlyReturnsFalse() {
+        final byte[] value = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+        final byte[] falseValue = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14};
+        assertFalse(ByteArrays.equalsConstantTime(value, falseValue));
+    }
+
+    @Test
+    public void testConstantTimeEqualsNull() {
+        assertFalse(ByteArrays.equalsConstantTime(null, new byte[0]));
+        assertFalse(ByteArrays.equalsConstantTime(new byte[0], null));
+    }
+
+    @Test
+    public void testConstantTimeEqualsEmpty() {
+        assertTrue(ByteArrays.equalsConstantTime(new byte[0], new byte[0]));
+    }
 }
