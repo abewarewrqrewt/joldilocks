@@ -5,6 +5,7 @@ import java.math.BigInteger;
 
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
+import static nl.dannyvanheumen.joldilocks.Points.LEAST_SIGNIFICANT_BIT_OF_BYTE;
 
 /**
  * The Point interface represents the generic Point on the Ed448-Goldilocks curve.
@@ -86,20 +87,8 @@ public interface Point {
         // -- RFC 8032
         final byte[] encoded = new byte[ENCODED_LENGTH_BYTES];
         Scalars.encodeLittleEndianTo(encoded, 0, y);
-        final int leastSignificantBit = Scalars.encodeLittleEndian(x)[0] & 0x1;
+        final int leastSignificantBit = Scalars.encodeLittleEndian(x)[0] & LEAST_SIGNIFICANT_BIT_OF_BYTE;
         encoded[ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
         return encoded;
-    }
-
-    /**
-     * Decode encoded Point according to RFC8032.
-     *
-     * @param encodedPoint Encoded Edwards point
-     * @return Returns point instance.
-     */
-    @Nonnull
-    static Point decode(final byte[] encodedPoint) {
-        // FIXME Implement point decoding. (Is this the right place for a construction method?)
-        throw new UnsupportedOperationException("To be implementd");
     }
 }
