@@ -12,7 +12,7 @@ import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
 /**
  * Utility methods for scalar values.
  */
-final class Scalars {
+public final class Scalars {
 
     private static final int LENGTH_SCALAR_BITS = 448;
 
@@ -43,7 +43,7 @@ final class Scalars {
      * @return Returns scalar as little-endian byte array.
      */
     @Nonnull
-    static byte[] encodeLittleEndian(final BigInteger value) {
+    public static byte[] encodeLittleEndian(final BigInteger value) {
         return Arrays.reverse(BigIntegers.asUnsignedByteArray(value));
     }
 
@@ -54,7 +54,7 @@ final class Scalars {
      * @param offset offset in array
      * @param value  Value to encode.
      */
-    static void encodeLittleEndianTo(final byte[] dst, final int offset, final BigInteger value) {
+    public static void encodeLittleEndianTo(final byte[] dst, final int offset, final BigInteger value) {
         final byte[] bigEndianBytes = BigIntegers.asUnsignedByteArray(value);
         for (int si = bigEndianBytes.length - 1, di = offset; si >= 0; si--) {
             dst[di++] = bigEndianBytes[si];
@@ -68,7 +68,7 @@ final class Scalars {
      * @return Returns scalar.
      */
     @Nonnull
-    static BigInteger decodeLittleEndian(final byte[] value) {
+    public static BigInteger decodeLittleEndian(final byte[] value) {
         return BigIntegers.fromUnsignedByteArray(Arrays.reverse(value));
     }
 
@@ -79,7 +79,7 @@ final class Scalars {
      * @return Returns same value iff not zero.
      */
     @Nonnull
-    static BigInteger requireNotZero(final BigInteger value) {
+    public static BigInteger requireNotZero(final BigInteger value) {
         if (value.equals(ZERO)) {
             throw new IllegalArgumentException("Value is zero.");
         }
