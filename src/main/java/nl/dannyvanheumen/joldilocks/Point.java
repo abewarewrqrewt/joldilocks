@@ -59,12 +59,26 @@ public interface Point {
     Point add(Point p);
 
     /**
-     * Double the point (by multiplying it with itself).
+     * Double the point (naively, by adding it to itself).
      *
      * @return Returns the doubled point.
      */
     @Nonnull
-    Point doubling();
+    default Point doubling() {
+        return this.add(this);
+    }
+
+    /**
+     * Multiply the point with given scalar value.
+     *
+     * @param scalar the scalar value
+     * @return Returns new point that is result of multiplication.
+     */
+    @Nonnull
+    default Point multiply(BigInteger scalar) {
+        // FIXME Implement (generic) scalar multiplication algorithm for arbitrary point, such as Montgomery ladder, or non-adjacent form (NAF, a.k.a. window width 1, or window width 4.
+        throw new UnsupportedOperationException("To be implemented");
+    }
 
     /**
      * Encode Point according to RFC8032.

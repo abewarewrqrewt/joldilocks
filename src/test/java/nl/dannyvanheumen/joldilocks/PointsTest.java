@@ -3,14 +3,21 @@ package nl.dannyvanheumen.joldilocks;
 import org.junit.jupiter.api.Test;
 
 import static java.math.BigInteger.ONE;
+import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
+import static nl.dannyvanheumen.joldilocks.Points.checkIdentity;
+import static nl.dannyvanheumen.joldilocks.Points.decode;
+import static nl.dannyvanheumen.joldilocks.Points.identity;
+import static nl.dannyvanheumen.joldilocks.Points.requireNotIdentity;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("ConstantConditions")
 public class PointsTest {
@@ -29,7 +36,7 @@ public class PointsTest {
 
     @Test
     public void testIdentityPoint() {
-        final Point id = Points.identity();
+        final Point id = identity();
         assertNotNull(id);
         assertEquals(ZERO, id.x());
         assertEquals(ONE, id.y());
@@ -40,7 +47,7 @@ public class PointsTest {
 
     @Test
     public void testIdentityPointToExtended() {
-        final Point id = Points.identity();
+        final Point id = identity();
         final ExtendedPoint extendedId = Points.toExtended(id);
         assertEquals(id.x(), extendedId.x());
         assertEquals(id.y(), extendedId.y());
@@ -48,31 +55,67 @@ public class PointsTest {
 
     @Test
     public void testDecodeRFC8032TestPublicKey() {
-        assertNotNull(Points.decode(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE));
+        assertNotNull(decode(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE));
     }
 
     @Test
     public void testEncodeDecodeRFC8032TestPublicKey() {
-        assertArrayEquals(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE, Points.decode(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE).encode());
+        assertArrayEquals(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE, decode(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE).encode());
     }
 
     @Test
     public void testDecodeNull() {
-        assertThrows(NullPointerException.class, () -> Points.decode(null));
+        assertThrows(NullPointerException.class, () -> decode(null));
     }
 
     @Test
     public void testDecodeEmptyArray() {
-        assertThrows(IllegalArgumentException.class, () -> Points.decode(new byte[0]));
+        assertThrows(IllegalArgumentException.class, () -> decode(new byte[0]));
     }
 
     @Test
     public void testDecodeArrayTooSmall() {
-        assertThrows(IllegalArgumentException.class, () -> Points.decode(new byte[ENCODED_LENGTH_BYTES-1]));
+        assertThrows(IllegalArgumentException.class, () -> decode(new byte[ENCODED_LENGTH_BYTES-1]));
     }
 
     @Test
     public void testDecodeArrayTooLarge() {
-        assertThrows(IllegalArgumentException.class, () -> Points.decode(new byte[ENCODED_LENGTH_BYTES+1]));
+        assertThrows(IllegalArgumentException.class, () -> decode(new byte[ENCODED_LENGTH_BYTES + 1]));
+    }
+
+    @Test
+    public void testCheckIdentityNull() {
+        assertThrows(NullPointerException.class, () -> checkIdentity(null));
+    }
+
+    @Test
+    public void testCheckIdentityIdentity() {
+        assertTrue(checkIdentity(identity()));
+    }
+
+    @Test
+    public void testCheckIdentityCustomIdentity() {
+        assertTrue(checkIdentity(ExtendedPoint.fromEdwards(ZERO, ONE)));
+    }
+
+    @Test
+    public void testCheckIdentityArbitraryPoint() {
+        assertFalse(checkIdentity(ExtendedPoint.fromEdwards(TEN, TEN)));
+    }
+
+    @Test
+    public void testRequireNotIdentityNull() {
+        assertThrows(NullPointerException.class, () -> requireNotIdentity(null));
+    }
+
+    @Test
+    public void testRequireIdentityIdentity() {
+        assertThrows(IllegalArgumentException.class, () -> requireNotIdentity(identity()));
+    }
+
+    @Test
+    public void testRequireIdentityArbitraryPoint() {
+        final ExtendedPoint p = ExtendedPoint.fromEdwards(TEN, TEN);
+        assertSame(p, requireNotIdentity(p));
     }
 }

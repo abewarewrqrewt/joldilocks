@@ -14,7 +14,7 @@ import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
 /**
  * Utility methods for managing points and point representation conversions.
  */
-final class Points {
+public final class Points {
 
     /**
      * Point representing the identity of the curve.
@@ -37,8 +37,32 @@ final class Points {
      * @return Returns identity point.
      */
     @Nonnull
-    static Point identity() {
+    public static Point identity() {
         return IDENTITY;
+    }
+
+    /**
+     * Require that point p is not the identity point.
+     *
+     * @param p point
+     * @return Returns p iff not the identity point.
+     * @throws IllegalArgumentException In case p is identity point.
+     */
+    public static Point requireNotIdentity(final Point p) {
+        if (checkIdentity(p)) {
+            throw new IllegalArgumentException("Point is identity.");
+        }
+        return p;
+    }
+
+    /**
+     * Method for testing if a point is the identity point.
+     *
+     * @param p point
+     * @return Returns true if p is identity, or false otherwise.
+     */
+    public static boolean checkIdentity(final Point p) {
+        return ZERO.equals(p.x()) && ONE.equals(p.y());
     }
 
     /**
@@ -48,7 +72,7 @@ final class Points {
      * @return Returns ExtendedPoint with same Edwards coordinates as input point.
      */
     @Nonnull
-    static ExtendedPoint toExtended(final Point other) {
+    public static ExtendedPoint toExtended(final Point other) {
         if (other instanceof ExtendedPoint) {
             return (ExtendedPoint) other;
         }
@@ -62,7 +86,7 @@ final class Points {
      * @return Returns point instance.
      */
     @Nonnull
-    static Point decode(final byte[] encodedPoint) {
+    public static Point decode(final byte[] encodedPoint) {
         requireLengthExactly(encodedPoint, ENCODED_LENGTH_BYTES);
         final int xBit = (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
         encodedPoint[ENCODED_LENGTH_BYTES - 1] ^= (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
@@ -100,6 +124,7 @@ final class Points {
     /**
      * Class that implements an identity point.
      */
+    // TODO Should we even use this or throw it away in favor of consistent behavior? (safety)
     private static final class IdentityPoint implements Point {
 
         @Nonnull
@@ -124,6 +149,12 @@ final class Points {
         @Override
         public Point add(final Point p) {
             return p;
+        }
+
+        @Nonnull
+        @Override
+        public Point multiply(final BigInteger scalar) {
+            return this;
         }
 
         @Nonnull

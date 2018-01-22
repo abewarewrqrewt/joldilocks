@@ -189,6 +189,7 @@ final class ExtendedPoint implements Point {
         return new ExtendedPoint(resultX, resultY, resultZ, resultT);
     }
 
+    // TODO Consider if we want to keep this method ... if we don't use it, we can just as well delete it altogether.
     @Nonnull
     public ExtendedPoint triple() {
         final BigInteger yy = this.y.multiply(this.y);
