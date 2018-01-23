@@ -1,5 +1,6 @@
 package nl.dannyvanheumen.joldilocks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 
@@ -61,6 +62,7 @@ public final class Points {
      * @param p point
      * @return Returns true if p is identity, or false otherwise.
      */
+    @CheckReturnValue
     public static boolean checkIdentity(final Point p) {
         return ZERO.equals(p.x()) && ONE.equals(p.y());
     }
