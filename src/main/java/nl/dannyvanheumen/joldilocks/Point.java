@@ -74,10 +74,30 @@ public interface Point {
      * @param scalar the scalar value
      * @return Returns new point that is result of multiplication.
      */
+    // FIXME Multiplication is currently still horribly slow.
+    // TODO Consider replacing with Montgomery Ladder or some other safer multiplication algorithm.
     @Nonnull
     default Point multiply(BigInteger scalar) {
-        // FIXME Implement (generic) scalar multiplication algorithm for arbitrary point, such as Montgomery ladder, or non-adjacent form (NAF, a.k.a. window width 1, or window width 4.
-        throw new UnsupportedOperationException("To be implemented");
+        //
+        // Current implementation is based on Double-and-Add, as described in Wikipedia.
+        // https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Double-and-add
+        //
+        //  N ← P
+        //  Q ← 0
+        //  for i from 0 to m do
+        //     if di = 1 then
+        //         Q ← point_add(Q, N)
+        //     N ← point_double(N)
+        //  return Q
+        Point p = this;
+        Point q = Points.identity();
+        for (int i = 0; i < scalar.bitLength(); i++) {
+            if (scalar.testBit(i)) {
+                q = q.add(p);
+            }
+            p = p.doubling();
+        }
+        return q;
     }
 
     /**
