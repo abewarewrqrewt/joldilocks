@@ -78,6 +78,6 @@ public class ExtendedPointTest {
     public void testPointNegation() {
         final Point negativeP = P.negate();
         assertNotNull(negativeP);
-        assertTrue(Curve.contains(negativeP));
+        assertTrue(Ed448.contains(negativeP));
     }
 }

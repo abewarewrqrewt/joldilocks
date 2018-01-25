@@ -33,7 +33,7 @@ final class PrivateKey {
         final BigInteger symmetricKey = new BigInteger(requireLengthExactly(symmetricKeyBytes, LENGTH_SYMMETRIC_KEY_BYTES));
         final byte[] secretKeyBytes = requireLengthExactly(pseudoRandomFunction(symmetricKeyBytes), LENGTH_SECRET_KEY_BYTES);
         final BigInteger secretKey = new BigInteger(secretKeyBytes).mod(Ed448.MODULUS);
-        final Point publicKey = Curve.multiplyByBase(secretKey);
+        final Point publicKey = Ed448.multiplyByBase(secretKey);
         return new PrivateKey(secretKey, publicKey, symmetricKey);
     }
 
