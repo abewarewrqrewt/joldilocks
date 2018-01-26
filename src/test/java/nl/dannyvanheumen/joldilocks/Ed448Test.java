@@ -9,7 +9,7 @@ import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
-import static nl.dannyvanheumen.joldilocks.Ed448.PRIME_ORDER;
+import static nl.dannyvanheumen.joldilocks.Ed448.Q;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,14 +20,14 @@ public class Ed448Test {
 
     @Test
     public void testVerifyPrimeOrderSmallerThanModulus() {
-        assertTrue(PRIME_ORDER.compareTo(MODULUS) < 0);
+        assertTrue(Q.compareTo(MODULUS) < 0);
     }
 
     @Disabled
     @Test
     public void testVerifyPrimeOrderMultBasePointEqualsIdentity() {
         final Point identity = Points.identity();
-        final Point result = P.multiply(PRIME_ORDER);
+        final Point result = P.multiply(Q);
         assertEquals(identity.x(), result.x());
         assertEquals(identity.y(), result.y());
     }

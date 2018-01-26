@@ -28,7 +28,7 @@ public final class Ed448 {
      * <p>
      * The order of its twist is: 4 * (2**446 - 0x335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d). Not sure if that is actually used yet.
      */
-    static final BigInteger PRIME_ORDER = new BigInteger("3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3", 16);
+    public static final BigInteger Q = new BigInteger("3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3", 16);
 
     /**
      * a parameter of the untwisted Edwards curve formula.
