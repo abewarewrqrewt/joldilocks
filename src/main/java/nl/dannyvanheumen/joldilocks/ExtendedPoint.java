@@ -4,10 +4,13 @@ import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import static java.math.BigInteger.*;
+import static java.math.BigInteger.ONE;
+import static java.math.BigInteger.TWO;
+import static java.math.BigInteger.ZERO;
 import static java.util.Objects.requireNonNull;
 import static nl.dannyvanheumen.joldilocks.Ed448.A;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
+import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
 
 /**
@@ -121,11 +124,15 @@ final class ExtendedPoint implements Point {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final ExtendedPoint extendedPoint = (ExtendedPoint) o;
-        return Objects.equals(x, extendedPoint.x) &&
-                Objects.equals(y, extendedPoint.y) &&
-                Objects.equals(z, extendedPoint.z) &&
-                Objects.equals(t, extendedPoint.t);
+        final ExtendedPoint other = (ExtendedPoint) o;
+        //     # x1 / z1 == x2 / z2  <==>  x1 * z2 == x2 * z1
+        //    if (P[0] * Q[2] - Q[0] * P[2]) % p != 0:
+        //        return False
+        //    if (P[1] * Q[2] - Q[1] * P[2]) % p != 0:
+        //        return False
+        //    return True
+        return ZERO.equals(this.x.multiply(other.z).subtract(other.x.multiply(this.z)).mod(MODULUS))
+            & ZERO.equals(this.y.multiply(other.z).subtract(other.y.multiply(this.z)).mod(MODULUS));
     }
 
     @Override
@@ -155,11 +162,11 @@ final class ExtendedPoint implements Point {
     @Nonnull
     public ExtendedPoint add(final Point other) {
         final ExtendedPoint p2 = Points.toExtended(other);
-        final BigInteger a = this.x.multiply(p2.x);
-        final BigInteger b = this.y.multiply(p2.y);
-        final BigInteger c = this.t.multiply(D).multiply(p2.t);
-        final BigInteger d = this.z.multiply(p2.z);
-        final BigInteger e = this.x.add(this.y).multiply(p2.x.add(p2.y)).subtract(a).subtract(b);
+        final BigInteger a = this.x.multiply(p2.x).mod(MODULUS);
+        final BigInteger b = this.y.multiply(p2.y).mod(MODULUS);
+        final BigInteger c = this.t.multiply(D).mod(MODULUS).multiply(p2.t);
+        final BigInteger d = this.z.multiply(p2.z).mod(MODULUS);
+        final BigInteger e = this.x.add(this.y).multiply(p2.x.add(p2.y)).subtract(a).subtract(b).mod(MODULUS);
         final BigInteger f = d.subtract(c);
         final BigInteger g = d.add(c);
         final BigInteger h = b.subtract(A.multiply(a));
@@ -170,46 +177,15 @@ final class ExtendedPoint implements Point {
         return new ExtendedPoint(resultX, resultY, resultZ, resultT);
     }
 
+    /**
+     * Double current point (add point to itself).
+     *
+     * @return Returns new point.
+     */
     @Override
     @Nonnull
     public ExtendedPoint doubling() {
-        final BigInteger a = this.x.multiply(this.x);
-        final BigInteger b = this.y.multiply(this.y);
-        final BigInteger c = TWO.multiply(this.z.multiply(this.z));
-        final BigInteger d = A.multiply(a);
-        final BigInteger xPlusY = this.x.add(this.y);
-        final BigInteger e = xPlusY.multiply(xPlusY).subtract(a).subtract(b);
-        final BigInteger g = d.add(b);
-        final BigInteger f = g.subtract(c);
-        final BigInteger h = d.subtract(b);
-        final BigInteger resultX = e.multiply(f);
-        final BigInteger resultY = g.multiply(h);
-        final BigInteger resultT = e.multiply(h);
-        final BigInteger resultZ = f.multiply(g);
-        return new ExtendedPoint(resultX, resultY, resultZ, resultT);
-    }
-
-    // TODO Consider if we want to keep this method ... if we don't use it, we can just as well delete it altogether.
-    @Nonnull
-    public ExtendedPoint triple() {
-        final BigInteger yy = this.y.multiply(this.y);
-        final BigInteger axx = A.multiply(this.x.multiply(this.x));
-        final BigInteger ap = yy.add(axx);
-        final BigInteger b = TWO.multiply(TWO.multiply(this.z.multiply(this.z)).subtract(ap));
-        final BigInteger xb = axx.multiply(b);
-        final BigInteger yb = yy.multiply(b);
-        final BigInteger aa = ap.multiply(yy.subtract(axx));
-        final BigInteger f = aa.subtract(yb);
-        final BigInteger g = aa.add(xb);
-        final BigInteger xe = this.x.multiply(yb.add(aa));
-        final BigInteger yh = this.y.multiply(xb.subtract(aa));
-        final BigInteger zf = this.z.multiply(f);
-        final BigInteger zg = this.z.multiply(g);
-        final BigInteger resultX = xe.multiply(zf);
-        final BigInteger resultY = yh.multiply(zg);
-        final BigInteger resultZ = zf.multiply(zg);
-        final BigInteger resultT = xe.multiply(yh);
-        return new ExtendedPoint(resultX, resultY, resultZ, resultT);
+        return this.add(this);
     }
 
     /**
@@ -233,5 +209,10 @@ final class ExtendedPoint implements Point {
         final BigInteger s2 = r.multiply(s3).add(this.y);
         final BigInteger s1 = u.multiply(s2).divide(A);
         return s1.abs();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%s, %s, %s, %s) = (%s, %s)", this.x, this.y, this.z, this.t, x(), y());
     }
 }

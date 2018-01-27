@@ -23,13 +23,14 @@ public class Ed448Test {
         assertTrue(Q.compareTo(MODULUS) < 0);
     }
 
-    @Disabled
+    @Disabled("Fails for as of yet unexplained reason. Anything else w.r.t. multiplication seems to work correctly. This is an important characteristic though ...")
     @Test
     public void testVerifyPrimeOrderMultBasePointEqualsIdentity() {
-        final Point identity = Points.identity();
+        final Point identity = ExtendedPoint.fromEdwards(ZERO, ONE);
         final Point result = P.multiply(Q);
+        assertEquals(identity, result);
         assertEquals(identity.x(), result.x());
-        assertEquals(identity.y(), result.y());
+        assertEquals(identity.y(), result.y(), result.toString());
     }
 
     @Test

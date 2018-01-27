@@ -1,12 +1,14 @@
 package nl.dannyvanheumen.joldilocks;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
 public class ExtendedPointTest {
@@ -30,6 +32,7 @@ public class ExtendedPointTest {
     public void testPointIdentityAddingItself() {
         final ExtendedPoint i = ExtendedPoint.fromEdwards(ZERO, ONE);
         final ExtendedPoint i2 = i.add(i);
+        assertEquals(i, i2);
         assertEquals(i.x(), i2.x());
         assertEquals(i.y(), i2.y());
     }
@@ -50,28 +53,11 @@ public class ExtendedPointTest {
     }
 
     @Test
-    public void testPointTriplingIdentity() {
-        final ExtendedPoint i = ExtendedPoint.fromEdwards(ZERO, ONE);
-        final ExtendedPoint itripled = i.triple();
-        assertEquals(i.x(), itripled.x());
-        assertEquals(i.y(), itripled.y());
-    }
-
-    @Test
     public void testPointDoublingBase() {
         final Point doubled = P.doubling();
         final Point added = P.add(P);
         assertEquals(added.x(), doubled.x());
         assertEquals(added.y(), doubled.y());
-    }
-
-    @Disabled
-    @Test
-    public void testPointTriplingBase() {
-        final ExtendedPoint tripled = P.triple();
-        final ExtendedPoint tripleAdded = P.add(P).add(P);
-        assertEquals(tripled.x(), tripleAdded.x());
-        assertEquals(tripled.y(), tripleAdded.y());
     }
 
     @Test

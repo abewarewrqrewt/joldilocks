@@ -64,9 +64,7 @@ public interface Point {
      * @return Returns the doubled point.
      */
     @Nonnull
-    default Point doubling() {
-        return this.add(this);
-    }
+    Point doubling();
 
     /**
      * Multiply the point with given scalar value.
@@ -74,10 +72,9 @@ public interface Point {
      * @param scalar the scalar value
      * @return Returns new point that is result of multiplication.
      */
-    // FIXME Multiplication is currently still horribly slow.
     // TODO Consider replacing with Montgomery Ladder or some other safer multiplication algorithm.
     @Nonnull
-    default Point multiply(BigInteger scalar) {
+    default Point multiply(final BigInteger scalar) {
         //
         // Current implementation is based on Double-and-Add, as described in Wikipedia.
         // https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Double-and-add
@@ -95,7 +92,7 @@ public interface Point {
             if (scalar.testBit(i)) {
                 q = q.add(p);
             }
-            p = p.doubling();
+            p = p.add(p);
         }
         return q;
     }
