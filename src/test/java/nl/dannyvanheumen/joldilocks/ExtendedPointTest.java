@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
+import static nl.dannyvanheumen.joldilocks.Ed448.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
 public class ExtendedPointTest {
@@ -64,6 +65,7 @@ public class ExtendedPointTest {
     public void testPointNegation() {
         final Point negativeP = P.negate();
         assertNotNull(negativeP);
-        assertTrue(Ed448.contains(negativeP));
+        assertEquals(P.x().negate(), negativeP.x());
+        assertEquals(P.y(), negativeP.y());
     }
 }
