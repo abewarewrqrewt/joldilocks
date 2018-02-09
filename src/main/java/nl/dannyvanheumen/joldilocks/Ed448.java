@@ -1,5 +1,6 @@
 package nl.dannyvanheumen.joldilocks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 
@@ -62,6 +63,7 @@ public final class Ed448 {
      */
     // TODO: According to otrv4 spec, we can verify point is on the curve with: Given point X = (x,y), check X != Identity & x in range [0, q-1] & y in range [0, q-1] & q & X = Identity.
     // (https://github.com/otrv4/otrv4/blob/master/otrv4.md#verifying-that-a-point-is-on-the-curve)
+    @CheckReturnValue
     static boolean contains(final Point p) {
         // TODO: Check if we really need so many mod-operations
         final BigInteger x = p.x();
