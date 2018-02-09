@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Points.LEAST_SIGNIFICANT_BIT_OF_BYTE;
+import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndian;
+import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndianTo;
 
 /**
  * The Point interface represents the generic Point on the Ed448-Goldilocks curve.
@@ -76,16 +78,16 @@ public interface Point {
     @Nonnull
     default Point multiply(final BigInteger scalar) {
         //
-        // Current implementation is based on Double-and-Add, as described in Wikipedia.
+        // Current implementation is based on Double-and-Add, as described in Wikipedia. (And RFC 8032)
         // https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Double-and-add
         //
-        //  N ← P
-        //  Q ← 0
-        //  for i from 0 to m do
-        //     if di = 1 then
-        //         Q ← point_add(Q, N)
-        //     N ← point_double(N)
-        //  return Q
+        //     N ← P
+        //     Q ← 0
+        //     for i from 0 to m do
+        //         if di = 1 then
+        //             Q ← point_add(Q, N)
+        //         N ← point_double(N)
+        //     return Q
         Point p = this;
         Point q = Points.identity();
         for (int i = 0; i < scalar.bitLength(); i++) {
@@ -117,8 +119,8 @@ public interface Point {
         // x-coordinate to the most significant bit of the final octet."
         // -- RFC 8032
         final byte[] encoded = new byte[ENCODED_LENGTH_BYTES];
-        Scalars.encodeLittleEndianTo(encoded, 0, y);
-        final int leastSignificantBit = Scalars.encodeLittleEndian(x)[0] & LEAST_SIGNIFICANT_BIT_OF_BYTE;
+        encodeLittleEndianTo(encoded, 0, y);
+        final int leastSignificantBit = encodeLittleEndian(x)[0] & LEAST_SIGNIFICANT_BIT_OF_BYTE;
         encoded[ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
         return encoded;
     }
