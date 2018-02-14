@@ -10,6 +10,8 @@ import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static nl.dannyvanheumen.joldilocks.Ed448.Q;
+import static nl.dannyvanheumen.joldilocks.Ed448.contains;
+import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,42 +28,42 @@ public class Ed448Test {
     @Disabled("Fails for as of yet unexplained reason. Anything else w.r.t. multiplication seems to work correctly. This is an important characteristic though ...")
     @Test
     public void testVerifyPrimeOrderMultBasePointEqualsIdentity() {
-        final Point identity = ExtendedPoint.fromEdwards(ZERO, ONE);
+        final Point identity = fromEdwards(ZERO, ONE);
         final Point result = P.multiply(Q);
-        assertEquals(identity, result);
-        assertEquals(identity.x(), result.x());
+        assertEquals(identity.x(), result.x(), result.toString());
         assertEquals(identity.y(), result.y(), result.toString());
+        assertEquals(identity, result);
     }
 
     @Test
     public void testContainsNullFails() {
-        assertThrows(NullPointerException.class, () -> Ed448.contains(null));
+        assertThrows(NullPointerException.class, () -> contains(null));
     }
 
     @Test
     public void testContainsZero() {
-        assertFalse(Ed448.contains(ExtendedPoint.fromEdwards(ZERO, ZERO)));
+        assertFalse(contains(fromEdwards(ZERO, ZERO)));
     }
 
     // FIXME Not completely sure if this point is supposed to be on the curve ...
     @Test
     public void testContainsPoint1() {
-        assertTrue(Ed448.contains(ExtendedPoint.fromEdwards(ONE, ZERO)));
+        assertTrue(contains(fromEdwards(ONE, ZERO)));
     }
 
     @Test
     public void testContainsPoint2() {
-        assertTrue(Ed448.contains(ExtendedPoint.fromEdwards(ONE.negate(), ZERO)));
+        assertTrue(contains(fromEdwards(ONE.negate(), ZERO)));
     }
 
     @Test
     public void testContainsNeutralPoint() {
-        assertTrue(Ed448.contains(ExtendedPoint.fromEdwards(ZERO, ONE)));
+        assertTrue(contains(fromEdwards(ZERO, ONE)));
     }
 
     @Test
     public void testArbitraryPoint() {
-        assertFalse(Ed448.contains(ExtendedPoint.fromEdwards(BigInteger.valueOf(1234), BigInteger.valueOf(-856382))));
+        assertFalse(contains(fromEdwards(BigInteger.valueOf(1234), BigInteger.valueOf(-856382))));
     }
 
     @Test
@@ -72,6 +74,6 @@ public class Ed448Test {
 
     @Test
     public void testBasePointIsOnCurve() {
-        assertTrue(Ed448.contains(P), "Something is wrong as the base point is not considered to be on the curve. Not sure what is wrong yet.");
+        assertTrue(contains(P), "Something is wrong as the base point is not considered to be on the curve. Not sure what is wrong yet.");
     }
 }

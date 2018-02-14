@@ -1,13 +1,13 @@
 package nl.dannyvanheumen.joldilocks;
 
-import org.bouncycastle.util.Arrays;
-import org.bouncycastle.util.BigIntegers;
-
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
+import static org.bouncycastle.util.Arrays.reverse;
+import static org.bouncycastle.util.BigIntegers.asUnsignedByteArray;
+import static org.bouncycastle.util.BigIntegers.fromUnsignedByteArray;
 
 /**
  * Utility methods for scalar values.
@@ -44,7 +44,7 @@ public final class Scalars {
      */
     @Nonnull
     public static byte[] encodeLittleEndian(final BigInteger value) {
-        return Arrays.reverse(BigIntegers.asUnsignedByteArray(value));
+        return reverse(asUnsignedByteArray(value));
     }
 
     /**
@@ -55,7 +55,7 @@ public final class Scalars {
      * @param value  Value to encode.
      */
     public static void encodeLittleEndianTo(final byte[] dst, final int offset, final BigInteger value) {
-        final byte[] bigEndianBytes = BigIntegers.asUnsignedByteArray(value);
+        final byte[] bigEndianBytes = asUnsignedByteArray(value);
         for (int si = bigEndianBytes.length - 1, di = offset; si >= 0; si--) {
             dst[di++] = bigEndianBytes[si];
         }
@@ -69,7 +69,7 @@ public final class Scalars {
      */
     @Nonnull
     public static BigInteger decodeLittleEndian(final byte[] value) {
-        return BigIntegers.fromUnsignedByteArray(Arrays.reverse(value));
+        return fromUnsignedByteArray(reverse(value));
     }
 
     /**

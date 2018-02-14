@@ -11,7 +11,9 @@ import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
+import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
+import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
 
 /**
  * Utility methods for managing points and point representation conversions.
@@ -77,7 +79,7 @@ public final class Points {
         if (other instanceof ExtendedPoint) {
             return (ExtendedPoint) other;
         }
-        return ExtendedPoint.fromEdwards(other.x(), other.y());
+        return fromEdwards(other.x(), other.y());
     }
 
     /**
@@ -91,7 +93,7 @@ public final class Points {
         requireLengthExactly(encodedPoint, ENCODED_LENGTH_BYTES);
         final int xBit = (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
         encodedPoint[ENCODED_LENGTH_BYTES - 1] ^= (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
-        final BigInteger y = Scalars.decodeLittleEndian(encodedPoint);
+        final BigInteger y = decodeLittleEndian(encodedPoint);
         if (y.compareTo(MODULUS) >= 0) {
             throw new IllegalArgumentException("Encoded point is illegal.");
         }
@@ -119,7 +121,7 @@ public final class Points {
             throw new IllegalArgumentException("Encoded point is illegal.");
         }
         final BigInteger x = xBit == prelimX.mod(TWO).intValue() ? prelimX : MODULUS.subtract(prelimX);
-        return ExtendedPoint.fromEdwards(x, y);
+        return fromEdwards(x, y);
     }
 
     /**
