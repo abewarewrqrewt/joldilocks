@@ -7,8 +7,9 @@ import java.security.SecureRandom;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
-import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR_TIMES_TWO_POWER_445_MINUS_ONE;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.TWO_POWER_447;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
 import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndian;
@@ -25,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ScalarsTest {
 
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final BigInteger TWO_POWER_447 = TWO.pow(447);
-    private static final BigInteger FOUR_TIMES_TWO_POWER_445_MINUS_ONE = BigInteger.valueOf(4L).multiply(TWO.pow(445).subtract(ONE));
 
     @Test
     public void testRequireNotZeroForNullFails() {

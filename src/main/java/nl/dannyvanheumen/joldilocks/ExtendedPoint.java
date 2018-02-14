@@ -196,7 +196,7 @@ final class ExtendedPoint implements Point {
      *
      * @return Returns compressed-point scalar value.
      */
-    // FIXME verify that these are correct. It seems that this algorithm needs to be applied on Jacobi Quartic-type values.@Nonnull
+    // FIXME verify that these are correct. It seems that this algorithm needs to be applied on Jacobi Quartic-type values.
     @Nonnull
     BigInteger encodeDecaf() {
         final BigInteger aSubtractD = A.subtract(D);

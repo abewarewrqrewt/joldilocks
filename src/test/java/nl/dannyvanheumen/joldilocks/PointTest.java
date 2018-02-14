@@ -2,35 +2,31 @@ package nl.dannyvanheumen.joldilocks;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
-
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.EIGHT;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.FIVE;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.FIVEHUNDREDTWELVE;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.NINE;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.ONEHUNDREDTWENTYEIGHT;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.ONETHOUSANDTWENTYFOUR;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.SEVEN;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.SIX;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.SIXTEEN;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.SIXTYFOUR;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.THIRTYTWO;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.THREE;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOHUNDREDFIFTYSIX;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOTHOUSANDFORTYEIGHT;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
 public class PointTest {
-
-    private static final BigInteger THREE = BigInteger.valueOf(3L);
-    private static final BigInteger FOUR = BigInteger.valueOf(4L);
-    private static final BigInteger FIVE = BigInteger.valueOf(5L);
-    private static final BigInteger SIX = BigInteger.valueOf(6L);
-    private static final BigInteger SEVEN = BigInteger.valueOf(7L);
-    private static final BigInteger EIGHT = BigInteger.valueOf(8L);
-    private static final BigInteger NINE = BigInteger.valueOf(9L);
-
-    private static final BigInteger SIXTEEN = BigInteger.valueOf(16L);
-    private static final BigInteger THIRTYTWO = BigInteger.valueOf(32L);
-    private static final BigInteger SIXTYFOUR = BigInteger.valueOf(64L);
-    private static final BigInteger ONEHUNDREDTWENTYEIGHT = BigInteger.valueOf(128L);
-    private static final BigInteger TWOHUNDREDFIFTYSIX = BigInteger.valueOf(256L);
-    private static final BigInteger FIVEHUNDREDTWELVE = BigInteger.valueOf(512L);
-    private static final BigInteger ONETHOUSANDTWENTYFOUR = BigInteger.valueOf(1024L);
-    private static final BigInteger TWOTHOUSANDFORTYEIGHT = BigInteger.valueOf(2048L);
 
     @Test
     public void testPointEncodingDecoding() {

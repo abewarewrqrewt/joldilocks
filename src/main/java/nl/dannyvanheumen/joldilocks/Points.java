@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
@@ -21,8 +22,6 @@ public final class Points {
      * Point representing the identity of the curve.
      */
     private static final Point IDENTITY = new IdentityPoint();
-
-    private static final BigInteger FOUR = BigInteger.valueOf(4L);
 
     static final int LEAST_SIGNIFICANT_BIT_OF_BYTE = 0x01;
 
