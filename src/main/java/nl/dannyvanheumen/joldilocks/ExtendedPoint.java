@@ -162,19 +162,23 @@ final class ExtendedPoint implements Point {
     @Nonnull
     public ExtendedPoint add(final Point other) {
         final ExtendedPoint p2 = Points.toExtended(other);
-        final BigInteger a = this.x.multiply(p2.x).mod(MODULUS);
-        final BigInteger b = this.y.multiply(p2.y).mod(MODULUS);
-        final BigInteger c = this.t.multiply(D).mod(MODULUS).multiply(p2.t);
-        final BigInteger d = this.z.multiply(p2.z).mod(MODULUS);
-        final BigInteger e = this.x.add(this.y).multiply(p2.x.add(p2.y)).subtract(a).subtract(b).mod(MODULUS);
+        final BigInteger a = this.x.multiply(p2.x);
+        final BigInteger b = this.y.multiply(p2.y);
+        final BigInteger c = this.t.multiply(D).multiply(p2.t);
+        final BigInteger d = this.z.multiply(p2.z);
+        final BigInteger e = this.x.add(this.y).multiply(p2.x.add(p2.y)).subtract(a).subtract(b);
         final BigInteger f = d.subtract(c);
         final BigInteger g = d.add(c);
         final BigInteger h = b.subtract(A.multiply(a));
         final BigInteger resultX = e.multiply(f);
         final BigInteger resultY = g.multiply(h);
-        final BigInteger resultT = e.multiply(h);
+        // TODO: We should be able to skip calculation of resultT, as we immediately reduce anyways.
+        //final BigInteger resultT = e.multiply(h);
         final BigInteger resultZ = f.multiply(g);
-        return new ExtendedPoint(resultX, resultY, resultZ, resultT);
+        // After having finished the calculation, reduce the values.
+        final BigInteger reducedX = resultX.divide(resultZ);
+        final BigInteger reducedY = resultY.divide(resultZ);
+        return new ExtendedPoint(reducedX, reducedY, ONE, reducedX.multiply(reducedY));
     }
 
     /**
