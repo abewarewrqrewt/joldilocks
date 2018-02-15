@@ -16,8 +16,7 @@ import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
 /**
  * ExtendedPoint is a point in Extended Homogeneous Projective representation.
  */
-// TODO Consider replacing with custom bigint class for computation speed.
-// TODO Use of BigInteger coords, NOT CONSTANT TIME.
+// TODO: Use of BigInteger coords, NOT CONSTANT TIME.
 final class ExtendedPoint implements Point {
 
     /**
@@ -172,7 +171,6 @@ final class ExtendedPoint implements Point {
         final BigInteger h = b.subtract(A.multiply(a));
         final BigInteger resultX = e.multiply(f);
         final BigInteger resultY = g.multiply(h);
-        // TODO: We should be able to skip calculation of resultT, as we immediately reduce anyways.
         //final BigInteger resultT = e.multiply(h);
         final BigInteger resultZ = f.multiply(g);
         // After having finished the calculation, reduce the values.

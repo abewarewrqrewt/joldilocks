@@ -11,6 +11,7 @@ import static java.math.BigInteger.ONE;
  *
  * Ed448 is an untwisted Edwards curve (form: y^2 + x^2 = 1 + d * x^2 * y^2)
  */
+// TODO: Need to implement precomputed base multiples to speed up computation?
 public final class Ed448 {
 
     /**
@@ -27,7 +28,7 @@ public final class Ed448 {
      * Prime order q.
      * NOTE: 4q is the order of the Ed448-Goldilocks curve.
      * <p>
-     * The order of its twist is: 4 * (2**446 - 0x335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d). Not sure if that is actually used yet.
+     * The order of its twist is: 4 * (2**446 - 0x8335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d).
      */
     public static final BigInteger Q = new BigInteger("3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3", 16);
 
@@ -61,7 +62,7 @@ public final class Ed448 {
      * @param p The point to verify.
      * @return Returns true if it is contained in the curve.
      */
-    // TODO: According to otrv4 spec, we can verify point is on the curve with: Given point X = (x,y), check X != Identity & x in range [0, q-1] & y in range [0, q-1] & q & X = Identity.
+    // TODO: According to otrv4 spec, we can verify point is on the curve with: Given point X = (x,y), check X != Identity & x in range [0, q-1] & y in range [0, q-1] & q * X = Identity.
     // (https://github.com/otrv4/otrv4/blob/master/otrv4.md#verifying-that-a-point-is-on-the-curve)
     @CheckReturnValue
     static boolean contains(final Point p) {
@@ -85,9 +86,8 @@ public final class Ed448 {
      * @param scalar The scalar value, e.g. secret key.
      * @return Returns a point that is the result of the multiplication with the base.
      */
-    // FIXME Use (and implemented) pre-computed base for ECDH calculations. (Is this correct?)
     @Nonnull
     static Point multiplyByBase(final BigInteger scalar) {
-        return null;
+        return P.multiply(scalar);
     }
 }
