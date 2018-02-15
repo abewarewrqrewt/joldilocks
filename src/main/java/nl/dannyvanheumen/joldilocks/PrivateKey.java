@@ -11,7 +11,6 @@ import static nl.dannyvanheumen.joldilocks.Crypto.pseudoRandomFunction;
 /**
  * Container for the private key data.
  */
-// TODO Consider if we want to pass on the original byte array, or create copies such that the original container cannot be modified.
 final class PrivateKey {
 
     // FIXME assign correct lengths for secret, public and symmetric parts.
