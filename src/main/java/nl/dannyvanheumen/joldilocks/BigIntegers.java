@@ -7,6 +7,8 @@ import static java.math.BigInteger.TWO;
 
 final class BigIntegers {
 
+    static final BigInteger MINUS_TWO = BigInteger.valueOf(-2);
+
     static final BigInteger THREE = BigInteger.valueOf(3L);
     static final BigInteger FOUR = BigInteger.valueOf(4L);
     static final BigInteger FIVE = BigInteger.valueOf(5L);
@@ -25,7 +27,7 @@ final class BigIntegers {
     static final BigInteger TWOTHOUSANDFORTYEIGHT = BigInteger.valueOf(2048L);
 
     static final BigInteger TWO_POWER_447 = TWO.pow(447);
-    static final BigInteger FOUR_TIMES_TWO_POWER_445_MINUS_ONE = BigInteger.valueOf(4L).multiply(TWO.pow(445).subtract(ONE));
+    static final BigInteger FOUR_TIMES_TWO_POWER_445_MINUS_ONE = FOUR.multiply(TWO.pow(445).subtract(ONE));
 
     private BigIntegers() {
         // No need to instantiate utility class.

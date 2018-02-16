@@ -71,15 +71,15 @@ public final class Points {
     /**
      * Convert arbitrary Edwards point type to Extended Homogeneous Projective point representation.
      *
-     * @param other Some other Edwards point.
+     * @param point Some other Edwards point.
      * @return Returns ExtendedPoint with same Edwards coordinates as input point.
      */
     @Nonnull
-    public static ExtendedPoint toExtended(final Point other) {
-        if (other instanceof ExtendedPoint) {
-            return (ExtendedPoint) other;
+    public static ExtendedPoint toExtended(final Point point) {
+        if (point instanceof ExtendedPoint) {
+            return (ExtendedPoint) point;
         }
-        return fromEdwards(other.x(), other.y());
+        return fromEdwards(point.x(), point.y());
     }
 
     /**

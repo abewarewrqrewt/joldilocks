@@ -8,9 +8,12 @@ import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
 import static java.util.Objects.requireNonNull;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.MINUS_TWO;
 import static nl.dannyvanheumen.joldilocks.Ed448.A;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
+import static nl.dannyvanheumen.joldilocks.Points.toExtended;
 import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
 
 /**
@@ -23,9 +26,6 @@ final class ExtendedPoint implements Point {
      * Identity point in Extended Homogeneous Projective representation.
      */
     private static final ExtendedPoint IDENTITY = new ExtendedPoint(ZERO, ONE, ONE, ZERO);
-
-    private static final BigInteger MINUS_TWO = BigInteger.valueOf(-2);
-    private static final BigInteger FOUR = BigInteger.valueOf(4);
 
     /**
      * Extended Homogeneous representation parameter X.
@@ -160,7 +160,7 @@ final class ExtendedPoint implements Point {
     @Override
     @Nonnull
     public ExtendedPoint add(final Point other) {
-        final ExtendedPoint p2 = Points.toExtended(other);
+        final ExtendedPoint p2 = toExtended(other);
         final BigInteger a = this.x.multiply(p2.x);
         final BigInteger b = this.y.multiply(p2.y);
         final BigInteger c = this.t.multiply(D).multiply(p2.t);
