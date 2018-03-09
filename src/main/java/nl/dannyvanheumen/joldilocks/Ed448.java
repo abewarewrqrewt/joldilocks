@@ -87,7 +87,7 @@ public final class Ed448 {
      * @return Returns a point that is the result of the multiplication with the base.
      */
     @Nonnull
-    static Point multiplyByBase(final BigInteger scalar) {
+    public static Point multiplyByBase(final BigInteger scalar) {
         return P.multiply(scalar);
     }
 }
