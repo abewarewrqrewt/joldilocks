@@ -25,6 +25,21 @@ final class ByteArrays {
     }
 
     /**
+     * Require length to be at most as specified. Throws an IllegalArgumentException whenever this does not hold.
+     *
+     * @param length The maximum length that is acceptable.
+     * @param data   The array to be verified.
+     * @return Returns same data as provided only if length is at most as specified.
+     */
+    @Nonnull
+    static byte[] requireLengthAtMost(final int length, final byte[] data) {
+        if (data.length > length) {
+            throw new IllegalArgumentException("Length of array is expected to be at most " + length + ", but is in fact " + data.length);
+        }
+        return data;
+    }
+
+    /**
      * Constant-time equality test for byte-arrays.
      *
      * @param a1 Array 1 in comparison

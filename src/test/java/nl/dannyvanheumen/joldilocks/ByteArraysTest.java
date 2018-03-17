@@ -2,7 +2,11 @@ package nl.dannyvanheumen.joldilocks;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthAtMost;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions", "WeakerAccess"})
 public class ByteArraysTest {
@@ -50,5 +54,27 @@ public class ByteArraysTest {
     @Test
     public void testConstantTimeEqualsEmpty() {
         assertTrue(ByteArrays.equalsConstantTime(new byte[0], new byte[0]));
+    }
+
+    @Test
+    public void testRequireLengthAtMostNullArray() {
+        assertThrows(NullPointerException.class, () -> requireLengthAtMost(10, null));
+    }
+
+    @Test
+    public void testRequireLengthAtMostExact() {
+        final byte[] d = new byte[10];
+        assertSame(d, requireLengthAtMost(10, d));
+    }
+
+    @Test
+    public void testRequireLengthAtMostValueIsOver() {
+        assertThrows(IllegalArgumentException.class, () -> requireLengthAtMost(9, new byte[10]));
+    }
+
+    @Test
+    public void testRequireLengthAtMostValueIsLower() {
+        final byte[] d = new byte[10];
+        assertSame(d, requireLengthAtMost(11, d));
     }
 }
