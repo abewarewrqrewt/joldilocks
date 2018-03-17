@@ -2,9 +2,25 @@ package nl.dannyvanheumen.joldilocks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 import static java.math.BigInteger.ONE;
+import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthAtMost;
+import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
+import static nl.dannyvanheumen.joldilocks.Crypto.shake256;
+import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
+import static nl.dannyvanheumen.joldilocks.Points.decode;
+import static nl.dannyvanheumen.joldilocks.Points.prune;
+import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
+import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndian;
+import static org.bouncycastle.util.Arrays.clear;
+import static org.bouncycastle.util.Arrays.concatenate;
+import static org.bouncycastle.util.Arrays.copyOf;
+import static org.bouncycastle.util.Arrays.copyOfRange;
 
 /**
  * Ed448-Goldilocks implementation.
@@ -13,6 +29,16 @@ import static java.math.BigInteger.ONE;
  */
 // TODO: Need to implement precomputed base multiples to speed up computation?
 public final class Ed448 {
+
+    /**
+     * Length of private key in bytes.
+     */
+    private static final int PRIVATE_KEY_LENGTH_BYTES = 57;
+
+    /**
+     * Digest length in bytes, applies when producing digest of the private key.
+     */
+    private static final int SIGNING_DIGEST_LENGTH_BYTES = 114;
 
     /**
      * Cofactor of Ed448-Goldilocks curve.
@@ -56,6 +82,8 @@ public final class Ed448 {
             new BigInteger("298819210078481492676017930443930673437544040154080242095928241372331506189835876003536878655418784733982303233503462500531545062832660", 10)
     );
 
+    private static final byte[] PREFIX_SIGED448_BYTES = "SigEd448".getBytes(StandardCharsets.US_ASCII);
+
     /**
      * Verify that given point is contained in the curve.
      *
@@ -81,6 +109,122 @@ public final class Ed448 {
     }
 
     /**
+     * Generate Ed448 key pair according to OTRv4 spec. Which corresponds to RFC 8032 key generation section with the
+     * exception of the final conversions to byte arrays.
+     * <p>
+     * NOTE: if there is no additional value for <code>symmetricKey</code>, caller should ensure that this variable is
+     * cleared.
+     *
+     * @param symmetricKey The secret bytes used as input to key generation. This symmetric key data should be generated
+     *                     from a cryptographically secure random source.
+     * @return Returns an Ed448 key pair based on the private key input.
+     */
+    @Nonnull
+    public static Ed448KeyPair generate(final byte[] symmetricKey) {
+        final byte[] h = shake256(requireLengthExactly(symmetricKey, PRIVATE_KEY_LENGTH_BYTES),
+            SIGNING_DIGEST_LENGTH_BYTES);
+        final byte[] publicKeySourceData = copyOf(h, ENCODED_LENGTH_BYTES);
+        clear(h);
+        prune(publicKeySourceData);
+        final BigInteger sk = decodeLittleEndian(publicKeySourceData);
+        final Point a = multiplyByBase(sk);
+        return new Ed448KeyPair(sk, a);
+    }
+
+    /**
+     * Sign an arbitrary length message.
+     *
+     * @param sk      The secret key.
+     * @param context Context C, max 255 bytes.
+     * @param message Message, arbitrary length.
+     */
+    @Nonnull
+    public static byte[] sign(final BigInteger sk, final byte[] context, final byte[] message) {
+        requireLengthAtMost(255, context);
+        // 1. Hash the private key, 57 octets, using SHAKE256(x, 114).  Let h denote the resulting digest. Construct the
+        //    secret scalar s from the first half of the digest, and the corresponding public key A, as described in the
+        //    previous section.  Let prefix denote the second half of the hash digest, h[57],...,h[113].
+        final byte[] skbytes = encodeLittleEndian(sk);
+        final byte[] h = shake256(skbytes, SIGNING_DIGEST_LENGTH_BYTES);
+        final byte[] sbytes = copyOf(h, 57);
+        final byte[] prefix = copyOfRange(h, 57, 114);
+        clear(h);
+        prune(sbytes);
+        final BigInteger s = decodeLittleEndian(sbytes);
+        final byte[] encodedPointA = multiplyByBase(s).encode();
+        // 2. Compute SHAKE256(dom4(F, C) || prefix || PH(M), 114), where M is the message to be signed, F is 1 for
+        //    Ed448ph, 0 for Ed448, and C is the context to use.  Interpret the 114-octet digest as a little-endian
+        //    integer r.
+        final BigInteger r;
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            try {
+                buffer.write(dom4(context));
+                buffer.write(prefix);
+                buffer.write(ph(message));
+            } catch (final IOException e) {
+                throw new IllegalStateException("Failed to write byte buffer.", e);
+            }
+            r = decodeLittleEndian(shake256(buffer.toByteArray(), 114));
+        }
+        // 3. Compute point [r]B. For efficiency, do this by first reducing r modulo L, the group order of B. Let the
+        //    string R be the encoding of this point.
+        final byte[] encodedPointR = P.multiply(r.mod(Q)).encode();
+        // 4. Compute SHAKE256(dom4(F, C) || R || A || PH(M), 114), and interpret the 114-octet digest as a
+        //    little-endian integer k.
+        final BigInteger k;
+        {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            try {
+                buffer.write(dom4(context));
+                buffer.write(encodedPointR);
+                buffer.write(encodedPointA);
+                buffer.write(ph(message));
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to write byte buffer.", e);
+            }
+            k = decodeLittleEndian(buffer.toByteArray());
+        }
+        // 5. Compute S = (r + k * s) mod L. For efficiency, again reduce k modulo L first.
+        final byte[] encodedPointS = encodeLittleEndian(r.add(k.mod(Q).multiply(s)).mod(Q));
+        // 6. Form the signature of the concatenation of R (57 octets) and the little-endian encoding of S (57 octets;
+        //    the ten most significant bits of the final octets are always zero).
+        return concatenate(encodedPointR, encodedPointS);
+    }
+
+    /**
+     * Verify a signature for an arbitrary length message.
+     */
+    public static void verify(final byte[] context, final Point publicKey, final byte[] message, final byte[] signature)
+        throws SignatureVerificationFailedException {
+        // 1. To verify a signature on a message M using context C and public key A, with F being 0 for Ed448 and 1 for
+        //    Ed448ph, first split the signature into two 57-octet halves.  Decode the first half as a point R, and the
+        //    second half as an integer S, in the range 0 <= s < L. Decode the public key A as point A'. If any of the
+        //    decodings fail (including S being out of range), the signature is invalid.
+        final Point r;
+        try {
+            r = decode(copyOf(signature, 57));
+        } catch (final Points.InvalidDataException e) {
+            throw new SignatureVerificationFailedException("Data for point R is invalid.", e);
+        }
+        final BigInteger s = decodeLittleEndian(copyOfRange(signature, 57, 114));
+        if (ZERO.compareTo(s) > 0 || s.compareTo(Q) >= 0) {
+            throw new SignatureVerificationFailedException("Signature verification failed: scalar s is illegal.");
+        }
+        // 2. Compute SHAKE256(dom4(F, C) || R || A || PH(M), 114), and interpret the 114-octet digest as a
+        //    little-endian integer k.
+        final byte[] digest = shake256(concatenate(dom4(context), r.encode(), publicKey.encode(), ph(message)), 114);
+        final BigInteger k = decodeLittleEndian(digest);
+        // 3. Check the group equation [4][S]B = [4]R + [4][k]A'.  It's sufficient, but not required, to instead check
+        //    [S]B = R + [k]A'.
+        final Point lhs = P.multiply(s);
+        final Point rhs = r.add(publicKey.multiply(k));
+        if (!lhs.equals(rhs)) {
+            throw new SignatureVerificationFailedException("Failed to verify components.");
+        }
+    }
+
+    /**
      * Multiply scalar (e.g. secret key) by (pre-computed) base in order to derive a new point on the curve.
      *
      * @param scalar The scalar value, e.g. secret key.
@@ -89,5 +233,47 @@ public final class Ed448 {
     @Nonnull
     public static Point multiplyByBase(final BigInteger scalar) {
         return P.multiply(scalar);
+    }
+
+    @Nonnull
+    private static byte[] dom4(final byte[] y) {
+        requireLengthAtMost(255, y);
+        try {
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            buffer.write(PREFIX_SIGED448_BYTES);
+            buffer.write(0);
+            buffer.write(y.length);
+            buffer.write(y);
+            return buffer.toByteArray();
+        } catch (final IOException e) {
+            throw new IllegalStateException("Failed to compose byte array.", e);
+        }
+    }
+
+    /**
+     * PreHash function. For Ed448, PH(x) is the identity function, i.e. returning x.
+     *
+     * @param x the data
+     * @return Returns the prehash for x.
+     */
+    @Nonnull
+    private static byte[] ph(final byte[] x) {
+        return x;
+    }
+
+    /**
+     * Exception indicating a failure during signature verification.
+     * <p>
+     * There are multiple failures possible. The message indicates what part of the verification actually failed.
+     */
+    public static final class SignatureVerificationFailedException extends Exception {
+
+        private SignatureVerificationFailedException(final String message) {
+            super(message);
+        }
+
+        private SignatureVerificationFailedException(final String message, final Throwable cause) {
+            super(message, cause);
+        }
     }
 }

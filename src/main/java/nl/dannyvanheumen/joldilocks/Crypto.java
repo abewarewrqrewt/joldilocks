@@ -1,6 +1,7 @@
 package nl.dannyvanheumen.joldilocks;
 
 import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.crypto.digests.SHAKEDigest;
 
 import javax.annotation.Nonnull;
 
@@ -10,6 +11,8 @@ import javax.annotation.Nonnull;
 final class Crypto {
 
     private static final int LENGTH_SHA512_HASH_BYTES = 64;
+
+    private static final int LENGTH_SHAKE_256_BITS = 256;
 
     private static final byte[] PREFIX_DERIVEPK = new byte[]{'d', 'e', 'r', 'i', 'v', 'e', 'p', 'k'};
 
@@ -26,5 +29,14 @@ final class Crypto {
         digest.update(input, 0, input.length);
         digest.doFinal(result, 0);
         return result;
+    }
+
+    @Nonnull
+    static byte[] shake256(final byte[] data, final int outputSize) {
+        final SHAKEDigest shake256 = new SHAKEDigest(LENGTH_SHAKE_256_BITS);
+        shake256.update(data, 0, data.length);
+        final byte[] digest = new byte[outputSize];
+        shake256.doFinal(digest, 0, outputSize);
+        return digest;
     }
 }
