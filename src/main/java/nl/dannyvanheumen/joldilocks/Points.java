@@ -89,13 +89,13 @@ public final class Points {
      * @return Returns point instance.
      */
     @Nonnull
-    public static Point decode(final byte[] encodedPoint) {
+    public static Point decode(final byte[] encodedPoint) throws InvalidDataException {
         requireLengthExactly(encodedPoint, ENCODED_LENGTH_BYTES);
         final int xBit = (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
         encodedPoint[ENCODED_LENGTH_BYTES - 1] ^= (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
         final BigInteger y = decodeLittleEndian(encodedPoint);
         if (y.compareTo(MODULUS) >= 0) {
-            throw new IllegalArgumentException("Encoded point is illegal.");
+            throw new InvalidDataException("Illegal value for Edwards coordinate y.");
         }
         // "Let
         //       num = y^2 - 1
@@ -115,10 +115,10 @@ public final class Points {
         final BigInteger x2 = num.multiply(denom.modInverse(MODULUS));
         final BigInteger prelimX = x2.modPow(MODULUS.add(ONE).divide(FOUR), MODULUS);
         if (num.mod(MODULUS).compareTo(prelimX.multiply(prelimX).multiply(denom).mod(MODULUS)) != 0) {
-            throw new IllegalArgumentException("Encoded point is illegal.");
+            throw new InvalidDataException("No square root exists.");
         }
         if (prelimX.equals(ZERO) && xBit != 0) {
-            throw new IllegalArgumentException("Encoded point is illegal.");
+            throw new InvalidDataException("Sign bit is 1 for x = 0.");
         }
         final BigInteger x = xBit == prelimX.mod(TWO).intValue() ? prelimX : MODULUS.subtract(prelimX);
         return fromEdwards(x, y);
@@ -164,6 +164,16 @@ public final class Points {
         @Override
         public Point doubling() {
             return this;
+        }
+    }
+
+    /**
+     * Exception that indicates that illegal point material was encountered.
+     */
+    public static final class InvalidDataException extends Exception {
+
+        private InvalidDataException(final String message) {
+            super("Illegal point data: " + message);
         }
     }
 }

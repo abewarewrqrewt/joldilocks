@@ -54,12 +54,12 @@ public class PointsTest {
     }
 
     @Test
-    public void testDecodeRFC8032TestPublicKey() {
+    public void testDecodeRFC8032TestPublicKey() throws Points.InvalidDataException {
         assertNotNull(decode(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE));
     }
 
     @Test
-    public void testEncodeDecodeRFC8032TestPublicKey() {
+    public void testEncodeDecodeRFC8032TestPublicKey() throws Points.InvalidDataException {
         assertArrayEquals(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE, decode(RFC8032_ED448_PUBLIC_KEY_1023_BYTES_MESSAGE).encode());
     }
 
