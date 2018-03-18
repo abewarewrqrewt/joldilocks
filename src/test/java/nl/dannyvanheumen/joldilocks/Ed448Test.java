@@ -1,6 +1,5 @@
 package nl.dannyvanheumen.joldilocks;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -18,6 +17,7 @@ import static nl.dannyvanheumen.joldilocks.Points.decode;
 import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,14 +29,28 @@ public class Ed448Test {
         assertTrue(Q.compareTo(MODULUS) < 0);
     }
 
-    @Disabled("Fails for as of yet unexplained reason. Anything else w.r.t. multiplication seems to work correctly. This is an important characteristic though ...")
     @Test
     public void testVerifyPrimeOrderMultBasePointEqualsIdentity() {
-        final Point identity = fromEdwards(ZERO, ONE);
+        final Point identity = new AffinePoint(ZERO, ONE);
         final Point result = P.multiply(Q);
         assertEquals(identity.x(), result.x(), result.toString());
         assertEquals(identity.y(), result.y(), result.toString());
         assertEquals(identity, result);
+    }
+
+    @Test
+    public void testBasePointEqualsBasePointConstant() {
+        assertSame(Ed448.P, Ed448.basePoint());
+    }
+
+    @Test
+    public void testModulusEqualsModulusConstant() {
+        assertSame(Ed448.MODULUS, Ed448.modulus());
+    }
+
+    @Test
+    public void testPrimeOrderEqualsPrimeOrderConstant() {
+        assertSame(Ed448.Q, Ed448.primeOrder());
     }
 
     @Test
@@ -81,7 +95,6 @@ public class Ed448Test {
         assertTrue(contains(P), "Something is wrong as the base point is not considered to be on the curve. Not sure what is wrong yet.");
     }
 
-    @Disabled("Point arithmetic not correct yet, therefore the test vector still fails.")
     @Test
     public void testVerifyPredefinedTestVectors() throws Points.InvalidDataException {
         final byte[] expected = new byte[]{0x53, 0x3a, 0x37, (byte) 0xf6, (byte) 0xbb, (byte) 0xe4, 0x57, 0x25, 0x1f, 0x02, 0x3c, 0x0d, (byte) 0x88, (byte) 0xf9, 0x76, (byte) 0xae, 0x2d, (byte) 0xfb, 0x50, 0x4a, (byte) 0x84, 0x3e, 0x34, (byte) 0xd2, 0x07, 0x4f, (byte) 0xd8, 0x23, (byte) 0xd4, 0x1a, 0x59, 0x1f, 0x2b, 0x23, 0x3f, 0x03, 0x4f, 0x62, (byte) 0x82, (byte) 0x81, (byte) 0xf2, (byte) 0xfd, 0x7a, 0x22, (byte) 0xdd, (byte) 0xd4, 0x7d, 0x78, 0x28, (byte) 0xc5, (byte) 0x9b, (byte) 0xd0, (byte) 0xa2, 0x1b, (byte) 0xfd, 0x39, (byte) 0x80, (byte) 0xff, 0x0d, 0x20, 0x28, (byte) 0xd4, (byte) 0xb1, (byte) 0x8a, (byte) 0x9d, (byte) 0xf6, 0x3e, 0x00, 0x6c, 0x5d, 0x1c, 0x2d, 0x34, 0x5b, (byte) 0x92, 0x5d, (byte) 0x8d, (byte) 0xc0, 0x0b, 0x41, 0x04, (byte) 0x85, 0x2d, (byte) 0xb9, (byte) 0x9a, (byte) 0xc5, (byte) 0xc7, (byte) 0xcd, (byte) 0xda, (byte) 0x85, 0x30, (byte) 0xa1, 0x13, (byte) 0xa0, (byte) 0xf4, (byte) 0xdb, (byte) 0xb6, 0x11, 0x49, (byte) 0xf0, 0x5a, 0x73, 0x63, 0x26, (byte) 0x8c, 0x71, (byte) 0xd9, 0x58, 0x08, (byte) 0xff, 0x2e, 0x65, 0x26, 0x00};

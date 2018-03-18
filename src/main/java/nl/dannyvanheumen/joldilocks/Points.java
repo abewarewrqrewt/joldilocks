@@ -50,6 +50,7 @@ public final class Points {
      * @return Returns p iff not the identity point.
      * @throws IllegalArgumentException In case p is identity point.
      */
+    @Nonnull
     public static Point requireNotIdentity(final Point p) {
         if (checkIdentity(p)) {
             throw new IllegalArgumentException("Point is identity.");
@@ -71,8 +72,8 @@ public final class Points {
     /**
      * Convert arbitrary Edwards point type to Extended Homogeneous Projective point representation.
      *
-     * @param point Some other Edwards point.
-     * @return Returns ExtendedPoint with same Edwards coordinates as input point.
+     * @param point An arbitrary Edwards point.
+     * @return Returns ExtendedPoint with same Edwards coordinates.
      */
     @Nonnull
     public static ExtendedPoint toExtended(final Point point) {
@@ -83,6 +84,20 @@ public final class Points {
     }
 
     /**
+     * Convert arbitrary Edwards point type to Affine point representation.
+     *
+     * @param point An arbitrary type of Edwards point.
+     * @return Returns AffinePoint with same Edwards coordinates.
+     */
+    @Nonnull
+    public static AffinePoint toAffine(final Point point) {
+        if (point instanceof AffinePoint) {
+            return (AffinePoint) point;
+        }
+        return new AffinePoint(point.x(), point.y());
+    }
+
+    /**
      * Decode encoded Point according to RFC8032.
      *
      * @param encodedPoint Encoded Edwards point
@@ -90,7 +105,7 @@ public final class Points {
      */
     @Nonnull
     public static Point decode(final byte[] encodedPoint) throws InvalidDataException {
-        requireLengthExactly(encodedPoint, ENCODED_LENGTH_BYTES);
+        requireLengthExactly(ENCODED_LENGTH_BYTES, encodedPoint);
         final int xBit = (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
         encodedPoint[ENCODED_LENGTH_BYTES - 1] ^= (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
         final BigInteger y = decodeLittleEndian(encodedPoint);
@@ -170,12 +185,6 @@ public final class Points {
         @Override
         public Point add(final Point p) {
             return p;
-        }
-
-        @Nonnull
-        @Override
-        public Point multiply(final BigInteger scalar) {
-            return this;
         }
 
         @Nonnull

@@ -38,7 +38,7 @@ public class ExtendedPointTest {
 
     @Test
     public void testPointIdentityAddition() {
-        final Point r = P.add(ExtendedPoint.fromEdwards(ZERO, ONE));
+        final Point r = P.add(new AffinePoint(ZERO, ONE));
         assertEquals(P.x(), r.x());
         assertEquals(P.y(), r.y());
     }

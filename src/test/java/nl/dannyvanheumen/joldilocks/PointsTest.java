@@ -6,6 +6,7 @@ import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
+import static nl.dannyvanheumen.joldilocks.ExtendedPoint.*;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
 import static nl.dannyvanheumen.joldilocks.Points.checkIdentity;
 import static nl.dannyvanheumen.joldilocks.Points.decode;
@@ -30,8 +31,9 @@ public class PointsTest {
     }
 
     @Test
-    public void testBasePointConversion() {
-        assertSame(P, Points.toExtended(P));
+    public void testPointConversionAlreadyExtended() {
+        final ExtendedPoint p = fromEdwards(P.x(), P.y());
+        assertSame(p, Points.toExtended(p));
     }
 
     @Test
@@ -96,12 +98,12 @@ public class PointsTest {
 
     @Test
     public void testCheckIdentityCustomIdentity() {
-        assertTrue(checkIdentity(ExtendedPoint.fromEdwards(ZERO, ONE)));
+        assertTrue(checkIdentity(fromEdwards(ZERO, ONE)));
     }
 
     @Test
     public void testCheckIdentityArbitraryPoint() {
-        assertFalse(checkIdentity(ExtendedPoint.fromEdwards(TEN, TEN)));
+        assertFalse(checkIdentity(fromEdwards(TEN, TEN)));
     }
 
     @Test
@@ -116,7 +118,7 @@ public class PointsTest {
 
     @Test
     public void testRequireIdentityArbitraryPoint() {
-        final ExtendedPoint p = ExtendedPoint.fromEdwards(TEN, TEN);
+        final ExtendedPoint p = fromEdwards(TEN, TEN);
         assertSame(p, requireNotIdentity(p));
     }
 }

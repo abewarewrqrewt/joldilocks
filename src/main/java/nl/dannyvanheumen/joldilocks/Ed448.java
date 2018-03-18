@@ -56,7 +56,7 @@ public final class Ed448 {
      * <p>
      * The order of its twist is: 4 * (2**446 - 0x8335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d).
      */
-    public static final BigInteger Q = new BigInteger("3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3", 16);
+    static final BigInteger Q = new BigInteger("3fffffffffffffffffffffffffffffffffffffffffffffffffffffff7cca23e9c44edb49aed63690216cc2728dc58f552378c292ab5844f3", 16);
 
     /**
      * a parameter of the untwisted Edwards curve formula.
@@ -75,7 +75,7 @@ public final class Ed448 {
      *
      * NOTE: this is the base point in 4E.
      */
-    public static final ExtendedPoint P = ExtendedPoint.fromEdwards(
+    static final AffinePoint P = new AffinePoint(
 //     X(P): 224580040295924300187604334099896036246789641632564134246125461686950415467406032909029192869357953282578032075146446173674602635247710
             new BigInteger("224580040295924300187604334099896036246789641632564134246125461686950415467406032909029192869357953282578032075146446173674602635247710", 10),
 //     Y(P): 298819210078481492676017930443930673437544040154080242095928241372331506189835876003536878655418784733982303233503462500531545062832660
@@ -109,6 +109,36 @@ public final class Ed448 {
     }
 
     /**
+     * Access base point of Ed448-Goldilocks curve.
+     *
+     * @return Returns base point.
+     */
+    @Nonnull
+    public static Point basePoint() {
+        return P;
+    }
+
+    /**
+     * Access modulus of Ed448-Goldilocks curve.
+     *
+     * @return Returns modulus.
+     */
+    @Nonnull
+    public static BigInteger modulus() {
+        return MODULUS;
+    }
+
+    /**
+     * Access prime order of Ed448-Goldilocks curve.
+     *
+     * @return Returns prime order.
+     */
+    @Nonnull
+    public static BigInteger primeOrder() {
+        return Q;
+    }
+
+    /**
      * Generate Ed448 key pair according to OTRv4 spec. Which corresponds to RFC 8032 key generation section with the
      * exception of the final conversions to byte arrays.
      * <p>
@@ -121,7 +151,7 @@ public final class Ed448 {
      */
     @Nonnull
     public static Ed448KeyPair generate(final byte[] symmetricKey) {
-        final byte[] h = shake256(requireLengthExactly(symmetricKey, PRIVATE_KEY_LENGTH_BYTES),
+        final byte[] h = shake256(requireLengthExactly(PRIVATE_KEY_LENGTH_BYTES, symmetricKey),
             SIGNING_DIGEST_LENGTH_BYTES);
         final byte[] publicKeySourceData = copyOf(h, ENCODED_LENGTH_BYTES);
         clear(h);
@@ -251,7 +281,7 @@ public final class Ed448 {
     }
 
     /**
-     * PreHash function. For Ed448, PH(x) is the identity function, i.e. returning x.
+     * PreHash function. For (plain) Ed448, PH(x) is the identity function, i.e. returning x.
      *
      * @param x the data
      * @return Returns the prehash for x.

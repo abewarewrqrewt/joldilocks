@@ -29,8 +29,8 @@ final class PrivateKey {
 
     @Nonnull
     static PrivateKey deriveFromSymmetricKey(final byte[] symmetricKeyBytes) {
-        final BigInteger symmetricKey = new BigInteger(requireLengthExactly(symmetricKeyBytes, LENGTH_SYMMETRIC_KEY_BYTES));
-        final byte[] secretKeyBytes = requireLengthExactly(pseudoRandomFunction(symmetricKeyBytes), LENGTH_SECRET_KEY_BYTES);
+        final BigInteger symmetricKey = new BigInteger(requireLengthExactly(LENGTH_SYMMETRIC_KEY_BYTES, symmetricKeyBytes));
+        final byte[] secretKeyBytes = requireLengthExactly(LENGTH_SECRET_KEY_BYTES, pseudoRandomFunction(symmetricKeyBytes));
         final BigInteger secretKey = new BigInteger(secretKeyBytes).mod(Ed448.MODULUS);
         final Point publicKey = Ed448.multiplyByBase(secretKey);
         return new PrivateKey(secretKey, publicKey, symmetricKey);

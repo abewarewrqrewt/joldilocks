@@ -30,7 +30,7 @@ public class PointTest {
 
     @Test
     public void testPointEncodingDecoding() throws Points.InvalidDataException {
-        final ExtendedPoint p = P;
+        final AffinePoint p = P;
         final Point newP = Points.decode(p.encode());
         assertEquals(p.x(), newP.x());
         assertEquals(p.y(), newP.y());
@@ -88,7 +88,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar6() {
-        final ExtendedPoint expected = P.add(P).add(P).add(P).add(P).add(P);
+        final AffinePoint expected = P.add(P).add(P).add(P).add(P).add(P);
         final Point newP = P.multiply(SIX);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -97,7 +97,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar7() {
-        final ExtendedPoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P);
+        final AffinePoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P);
         final Point newP = P.multiply(SEVEN);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -106,7 +106,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar8() {
-        final ExtendedPoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P).add(P);
+        final AffinePoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P).add(P);
         final Point newP = P.multiply(EIGHT);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -115,7 +115,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar9() {
-        final ExtendedPoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P).add(P).add(P);
+        final AffinePoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P).add(P).add(P);
         final Point newP = P.multiply(NINE);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -124,7 +124,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar10() {
-        final ExtendedPoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P).add(P).add(P).add(P);
+        final AffinePoint expected = P.add(P).add(P).add(P).add(P).add(P).add(P).add(P).add(P).add(P);
         final Point newP = P.multiply(TEN);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -133,7 +133,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar16() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(SIXTEEN);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -142,7 +142,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar32() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(THIRTYTWO);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -151,7 +151,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar64() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(SIXTYFOUR);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -160,7 +160,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar128() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(ONEHUNDREDTWENTYEIGHT);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -169,7 +169,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar256() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(TWOHUNDREDFIFTYSIX);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -178,7 +178,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar512() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(FIVEHUNDREDTWELVE);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -187,7 +187,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar1024() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(ONETHOUSANDTWENTYFOUR);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());
@@ -196,7 +196,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationScalar2048() {
-        final ExtendedPoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
+        final AffinePoint expected = P.doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling().doubling();
         final Point newP = P.multiply(TWOTHOUSANDFORTYEIGHT);
         assertEquals(expected, newP);
         assertEquals(expected.x(), newP.x());

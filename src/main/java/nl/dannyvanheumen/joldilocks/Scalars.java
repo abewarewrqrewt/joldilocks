@@ -30,7 +30,7 @@ public final class Scalars {
      */
     @Nonnull
     static BigInteger deserialize(final byte[] value) {
-        requireLengthExactly(value, LENGTH_SCALAR_BYTES);
+        requireLengthExactly(LENGTH_SCALAR_BYTES, value);
         value[0] &= 0xfc;
         value[55] |= 0x80;
         return decodeLittleEndian(value);
