@@ -72,17 +72,17 @@ public class PointsTest {
 
     @Test
     public void testDecodeEmptyArray() {
-        assertThrows(IllegalArgumentException.class, () -> decode(new byte[0]));
+        assertThrows(Points.InvalidDataException.class, () -> decode(new byte[0]));
     }
 
     @Test
     public void testDecodeArrayTooSmall() {
-        assertThrows(IllegalArgumentException.class, () -> decode(new byte[ENCODED_LENGTH_BYTES-1]));
+        assertThrows(Points.InvalidDataException.class, () -> decode(new byte[ENCODED_LENGTH_BYTES-1]));
     }
 
     @Test
     public void testDecodeArrayTooLarge() {
-        assertThrows(IllegalArgumentException.class, () -> decode(new byte[ENCODED_LENGTH_BYTES + 1]));
+        assertThrows(Points.InvalidDataException.class, () -> decode(new byte[ENCODED_LENGTH_BYTES + 1]));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

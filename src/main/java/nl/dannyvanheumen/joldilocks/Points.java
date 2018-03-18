@@ -105,7 +105,9 @@ public final class Points {
      */
     @Nonnull
     public static Point decode(final byte[] encodedPoint) throws InvalidDataException {
-        requireLengthExactly(ENCODED_LENGTH_BYTES, encodedPoint);
+        if (encodedPoint.length != ENCODED_LENGTH_BYTES) {
+            throw new InvalidDataException("Signature has invalid length. Expected exactly 57 bytes.");
+        }
         final int xBit = (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
         encodedPoint[ENCODED_LENGTH_BYTES - 1] ^= (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
         final BigInteger y = decodeLittleEndian(encodedPoint);

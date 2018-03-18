@@ -179,7 +179,6 @@ public final class Ed448 {
         final byte[] h = shake256(skbytes, SIGNING_DIGEST_LENGTH_BYTES);
         final byte[] sbytes = copyOf(h, 57);
         final byte[] prefix = copyOfRange(h, 57, 114);
-        clear(h);
         prune(sbytes);
         final BigInteger s = decodeLittleEndian(sbytes);
         final byte[] encodedPointA = multiplyByBase(s).encode();
@@ -200,7 +199,17 @@ public final class Ed448 {
         // "6. Form the signature of the concatenation of R (57 octets) and the little-endian encoding of S (57 octets;
         //    the ten most significant bits of the final octets are always zero)."
         // Given that the top ten most significant bits are always zero, add single byte to get to total of 114 bytes.
-        return concatenate(encodedPointR, encodedPointS, new byte[1]);
+        final byte[] signature = concatenate(encodedPointR, encodedPointS, new byte[1]);
+        // "7. Securely delete 'sym_key', 'sk', 'h', 'r' and 'k'."
+        clear(skbytes);
+        clear(sbytes);
+        clear(h);
+        clear(bufferR);
+        clear(bufferK);
+        clear(encodedPointA);
+        clear(encodedPointR);
+        clear(encodedPointS);
+        return signature;
     }
 
     /**
@@ -231,8 +240,8 @@ public final class Ed448 {
         final Point lhs = P.multiply(s);
         final Point rhs = r.add(publicKey.multiply(k));
         // FIXME debugging code
-        System.err.println("LHS: " + Arrays.toString(lhs.encode()));
-        System.err.println("RHS: " + Arrays.toString(rhs.encode()));
+        System.err.println("LHS: " + lhs);
+        System.err.println("RHS: " + rhs);
         if (!lhs.equals(rhs)) {
             throw new SignatureVerificationFailedException("Failed to verify components.");
         }
