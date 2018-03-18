@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
@@ -171,9 +172,9 @@ public final class Ed448 {
     @Nonnull
     public static byte[] sign(final BigInteger sk, final byte[] context, final byte[] message) {
         requireLengthAtMost(255, context);
-        // 1. Hash the private key, 57 octets, using SHAKE256(x, 114).  Let h denote the resulting digest. Construct the
-        //    secret scalar s from the first half of the digest, and the corresponding public key A, as described in the
-        //    previous section.  Let prefix denote the second half of the hash digest, h[57],...,h[113].
+        // "1. Hash the private key, 57 octets, using SHAKE256(x, 114).  Let h denote the resulting digest. Construct the
+        //     secret scalar s from the first half of the digest, and the corresponding public key A, as described in the
+        //     previous section.  Let prefix denote the second half of the hash digest, h[57],...,h[113]."
         final byte[] skbytes = encodeLittleEndian(sk);
         final byte[] h = shake256(skbytes, SIGNING_DIGEST_LENGTH_BYTES);
         final byte[] sbytes = copyOf(h, 57);
@@ -182,44 +183,24 @@ public final class Ed448 {
         prune(sbytes);
         final BigInteger s = decodeLittleEndian(sbytes);
         final byte[] encodedPointA = multiplyByBase(s).encode();
-        // 2. Compute SHAKE256(dom4(F, C) || prefix || PH(M), 114), where M is the message to be signed, F is 1 for
-        //    Ed448ph, 0 for Ed448, and C is the context to use.  Interpret the 114-octet digest as a little-endian
-        //    integer r.
-        final BigInteger r;
-        {
-            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            try {
-                buffer.write(dom4(context));
-                buffer.write(prefix);
-                buffer.write(ph(message));
-            } catch (final IOException e) {
-                throw new IllegalStateException("Failed to write byte buffer.", e);
-            }
-            r = decodeLittleEndian(shake256(buffer.toByteArray(), 114));
-        }
-        // 3. Compute point [r]B. For efficiency, do this by first reducing r modulo L, the group order of B. Let the
-        //    string R be the encoding of this point.
+        // "2. Compute SHAKE256(dom4(F, C) || prefix || PH(M), 114), where M is the message to be signed, F is 1 for
+        //     Ed448ph, 0 for Ed448, and C is the context to use.  Interpret the 114-octet digest as a little-endian
+        //     integer r."
+        final byte[] bufferR = concatenate(dom4(context), prefix, ph(message));
+        final BigInteger r = decodeLittleEndian(shake256(bufferR, 114));
+        // "3. Compute point [r]B. For efficiency, do this by first reducing r modulo L, the group order of B. Let the
+        //     string R be the encoding of this point."
         final byte[] encodedPointR = P.multiply(r.mod(Q)).encode();
-        // 4. Compute SHAKE256(dom4(F, C) || R || A || PH(M), 114), and interpret the 114-octet digest as a
-        //    little-endian integer k.
-        final BigInteger k;
-        {
-            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            try {
-                buffer.write(dom4(context));
-                buffer.write(encodedPointR);
-                buffer.write(encodedPointA);
-                buffer.write(ph(message));
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to write byte buffer.", e);
-            }
-            k = decodeLittleEndian(buffer.toByteArray());
-        }
-        // 5. Compute S = (r + k * s) mod L. For efficiency, again reduce k modulo L first.
+        // "4. Compute SHAKE256(dom4(F, C) || R || A || PH(M), 114), and interpret the 114-octet digest as a
+        //     little-endian integer k."
+        final byte[] bufferK = concatenate(dom4(context), encodedPointR, encodedPointA, ph(message));
+        final BigInteger k = decodeLittleEndian(shake256(bufferK, 114));
+        // "5. Compute S = (r + k * s) mod L. For efficiency, again reduce k modulo L first."
         final byte[] encodedPointS = encodeLittleEndian(r.add(k.mod(Q).multiply(s)).mod(Q));
-        // 6. Form the signature of the concatenation of R (57 octets) and the little-endian encoding of S (57 octets;
-        //    the ten most significant bits of the final octets are always zero).
-        return concatenate(encodedPointR, encodedPointS);
+        // "6. Form the signature of the concatenation of R (57 octets) and the little-endian encoding of S (57 octets;
+        //    the ten most significant bits of the final octets are always zero)."
+        // Given that the top ten most significant bits are always zero, add single byte to get to total of 114 bytes.
+        return concatenate(encodedPointR, encodedPointS, new byte[1]);
     }
 
     /**
@@ -249,6 +230,9 @@ public final class Ed448 {
         //    [S]B = R + [k]A'.
         final Point lhs = P.multiply(s);
         final Point rhs = r.add(publicKey.multiply(k));
+        // FIXME debugging code
+        System.err.println("LHS: " + Arrays.toString(lhs.encode()));
+        System.err.println("RHS: " + Arrays.toString(rhs.encode()));
         if (!lhs.equals(rhs)) {
             throw new SignatureVerificationFailedException("Failed to verify components.");
         }
