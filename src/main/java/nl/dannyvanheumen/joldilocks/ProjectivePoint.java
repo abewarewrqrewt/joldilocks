@@ -12,6 +12,7 @@ import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 /**
  * Edwards point in Projective Homogenous representation.
  */
+// TODO: ProjectivePoint addition is currently not working. (Most likely divide calls should be replaced with modInverse-multiply.)
 final class ProjectivePoint implements Point {
 
     private final BigInteger x;

@@ -20,6 +20,7 @@ import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
  * ExtendedPoint is a point in Extended Homogeneous Projective representation.
  */
 // TODO: Use of BigInteger coords, NOT CONSTANT TIME.
+// TODO: ExtendedPoint addition is currently not working. (Most likely divide calls should be replaced with modInverse-multiply.)
 final class ExtendedPoint implements Point {
 
     /**
