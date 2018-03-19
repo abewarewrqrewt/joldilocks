@@ -8,7 +8,6 @@ import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR;
-import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
@@ -138,7 +137,7 @@ public final class Points {
             throw new InvalidDataException("Sign bit is 1 for x = 0.");
         }
         final BigInteger x = xBit == prelimX.mod(TWO).intValue() ? prelimX : MODULUS.subtract(prelimX);
-        return fromEdwards(x, y);
+        return new AffinePoint(x, y);
     }
 
     /**

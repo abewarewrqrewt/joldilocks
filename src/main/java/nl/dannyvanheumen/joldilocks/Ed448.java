@@ -85,6 +85,10 @@ public final class Ed448 {
 
     private static final byte[] PREFIX_SIGED448_BYTES = "SigEd448".getBytes(StandardCharsets.US_ASCII);
 
+    private static final int CONTEXT_MAX_LENGTH_BYTES = 255;
+
+    private static final int SIGNATURE_LENGTH_BYTES = 114;
+
     /**
      * Verify that given point is contained in the curve.
      *
@@ -171,7 +175,7 @@ public final class Ed448 {
      */
     @Nonnull
     public static byte[] sign(final BigInteger sk, final byte[] context, final byte[] message) {
-        requireLengthAtMost(255, context);
+        requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
         // "1. Hash the private key, 57 octets, using SHAKE256(x, 114).  Let h denote the resulting digest. Construct the
         //     secret scalar s from the first half of the digest, and the corresponding public key A, as described in the
         //     previous section.  Let prefix denote the second half of the hash digest, h[57],...,h[113]."
@@ -217,6 +221,8 @@ public final class Ed448 {
      */
     public static void verify(final byte[] context, final Point publicKey, final byte[] message, final byte[] signature)
         throws SignatureVerificationFailedException {
+        requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
+        requireLengthExactly(SIGNATURE_LENGTH_BYTES, signature);
         // 1. To verify a signature on a message M using context C and public key A, with F being 0 for Ed448 and 1 for
         //    Ed448ph, first split the signature into two 57-octet halves.  Decode the first half as a point R, and the
         //    second half as an integer S, in the range 0 <= s < L. Decode the public key A as point A'. If any of the
@@ -239,9 +245,6 @@ public final class Ed448 {
         //    [S]B = R + [k]A'.
         final Point lhs = P.multiply(s);
         final Point rhs = r.add(publicKey.multiply(k));
-        // FIXME debugging code
-        System.err.println("LHS: " + lhs);
-        System.err.println("RHS: " + rhs);
         if (!lhs.equals(rhs)) {
             throw new SignatureVerificationFailedException("Failed to verify components.");
         }
