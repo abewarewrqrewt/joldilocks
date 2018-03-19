@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
+import static java.util.Objects.requireNonNull;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthAtMost;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
 import static nl.dannyvanheumen.joldilocks.Crypto.shake256;
@@ -184,6 +185,7 @@ public final class Ed448 {
     @Nonnull
     public static byte[] sign(final BigInteger sk, final byte[] context, final byte[] message) {
         requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
+        requireNonNull(message);
         // "1. Hash the private key, 57 octets, using SHAKE256(x, 114).  Let h denote the resulting digest. Construct the
         //     secret scalar s from the first half of the digest, and the corresponding public key A, as described in the
         //     previous section.  Let prefix denote the second half of the hash digest, h[57],...,h[113]."
@@ -236,6 +238,7 @@ public final class Ed448 {
     public static void verify(final byte[] context, final Point publicKey, final byte[] message, final byte[] signature)
         throws SignatureVerificationFailedException {
         requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
+        requireNonNull(message);
         requireLengthExactly(SIGNATURE_LENGTH_BYTES, signature);
         // "1. To verify a signature on a message M using context C and public key A, with F being 0 for Ed448 and 1 for
         //     Ed448ph, first split the signature into two 57-octet halves.  Decode the first half as a point R, and the
