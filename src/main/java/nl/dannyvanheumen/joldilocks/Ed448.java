@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
@@ -83,10 +82,19 @@ public final class Ed448 {
             new BigInteger("298819210078481492676017930443930673437544040154080242095928241372331506189835876003536878655418784733982303233503462500531545062832660", 10)
     );
 
+    /**
+     * Prefix used in generating Ed448 signatures.
+     */
     private static final byte[] PREFIX_SIGED448_BYTES = "SigEd448".getBytes(StandardCharsets.US_ASCII);
 
+    /**
+     * Maximum length in bytes of context.
+     */
     private static final int CONTEXT_MAX_LENGTH_BYTES = 255;
 
+    /**
+     * Length in bytes of signature.
+     */
     private static final int SIGNATURE_LENGTH_BYTES = 114;
 
     /**
@@ -218,15 +226,20 @@ public final class Ed448 {
 
     /**
      * Verify a signature for an arbitrary length message.
+     *
+     * @param context   The context value, max 255 bytes.
+     * @param message   The message, arbitrary length.
+     * @param publicKey The public key that corresponds to the signature.
+     * @param signature The signature in bytes.
      */
     public static void verify(final byte[] context, final Point publicKey, final byte[] message, final byte[] signature)
         throws SignatureVerificationFailedException {
         requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
         requireLengthExactly(SIGNATURE_LENGTH_BYTES, signature);
-        // 1. To verify a signature on a message M using context C and public key A, with F being 0 for Ed448 and 1 for
-        //    Ed448ph, first split the signature into two 57-octet halves.  Decode the first half as a point R, and the
-        //    second half as an integer S, in the range 0 <= s < L. Decode the public key A as point A'. If any of the
-        //    decodings fail (including S being out of range), the signature is invalid.
+        // "1. To verify a signature on a message M using context C and public key A, with F being 0 for Ed448 and 1 for
+        //     Ed448ph, first split the signature into two 57-octet halves.  Decode the first half as a point R, and the
+        //     second half as an integer S, in the range 0 <= s < L. Decode the public key A as point A'. If any of the
+        //     decodings fail (including S being out of range), the signature is invalid."
         final Point r;
         try {
             r = decode(copyOf(signature, 57));
@@ -237,17 +250,18 @@ public final class Ed448 {
         if (ZERO.compareTo(s) > 0 || s.compareTo(Q) >= 0) {
             throw new SignatureVerificationFailedException("Signature verification failed: scalar s is illegal.");
         }
-        // 2. Compute SHAKE256(dom4(F, C) || R || A || PH(M), 114), and interpret the 114-octet digest as a
-        //    little-endian integer k.
+        // "2. Compute SHAKE256(dom4(F, C) || R || A || PH(M), 114), and interpret the 114-octet digest as a
+        //     little-endian integer k."
         final byte[] digest = shake256(concatenate(dom4(context), r.encode(), publicKey.encode(), ph(message)), 114);
         final BigInteger k = decodeLittleEndian(digest);
-        // 3. Check the group equation [4][S]B = [4]R + [4][k]A'.  It's sufficient, but not required, to instead check
-        //    [S]B = R + [k]A'.
+        // "3. Check the group equation [4][S]B = [4]R + [4][k]A'.  It's sufficient, but not required, to instead check
+        //     [S]B = R + [k]A'."
         final Point lhs = P.multiply(s);
         final Point rhs = r.add(publicKey.multiply(k));
         if (!lhs.equals(rhs)) {
             throw new SignatureVerificationFailedException("Failed to verify components.");
         }
+        clear(digest);
     }
 
     /**
