@@ -133,6 +133,16 @@ public final class Ed448 {
     }
 
     /**
+     * Access cofactor of Ed448-Goldilocks curve.
+     *
+     * @return Returns cofactor.
+     */
+    @Nonnull
+    public static BigInteger cofactor() {
+        return COFACTOR;
+    }
+
+    /**
      * Access modulus of Ed448-Goldilocks curve.
      *
      * @return Returns modulus.
