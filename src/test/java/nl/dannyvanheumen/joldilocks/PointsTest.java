@@ -12,6 +12,7 @@ import static nl.dannyvanheumen.joldilocks.Points.checkIdentity;
 import static nl.dannyvanheumen.joldilocks.Points.decode;
 import static nl.dannyvanheumen.joldilocks.Points.identity;
 import static nl.dannyvanheumen.joldilocks.Points.requireNotIdentity;
+import static nl.dannyvanheumen.joldilocks.Points.toAffine;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -120,5 +121,24 @@ public class PointsTest {
     public void testRequireIdentityArbitraryPoint() {
         final ExtendedPoint p = fromEdwards(TEN, TEN);
         assertSame(p, requireNotIdentity(p));
+    }
+
+    @Test
+    public void testToAffineNull() {
+        assertThrows(NullPointerException.class, () -> toAffine(null));
+    }
+
+    @Test
+    public void testToAffineForAffinePoint() {
+        final AffinePoint p = new AffinePoint(ZERO, ONE);
+        assertSame(p, toAffine(p));
+    }
+
+    @Test
+    public void testToAffineForExtended() {
+        final ExtendedPoint p = ExtendedPoint.fromEdwards(ZERO, ONE);
+        final AffinePoint converted = toAffine(p);
+        assertEquals(p.x(), converted.x());
+        assertEquals(p.y(), converted.y());
     }
 }

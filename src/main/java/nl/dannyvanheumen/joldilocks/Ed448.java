@@ -300,7 +300,7 @@ public final class Ed448 {
             buffer.write(y);
             return buffer.toByteArray();
         } catch (final IOException e) {
-            throw new IllegalStateException("Failed to compose byte array.", e);
+            throw new IllegalStateException("BUG: Failed to compose byte array.", e);
         }
     }
 

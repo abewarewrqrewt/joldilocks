@@ -120,6 +120,7 @@ public interface Point {
         // -- RFC 8032
         final byte[] encoded = new byte[ENCODED_LENGTH_BYTES];
         encodeLittleEndianTo(encoded, 0, y);
+        // FIXME encoding fails in case x == 0 as it would serialize to zero-length byte array. Should be fixed.
         final int leastSignificantBit = encodeLittleEndian(x)[0] & LEAST_SIGNIFICANT_BIT_OF_BYTE;
         encoded[ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
         return encoded;

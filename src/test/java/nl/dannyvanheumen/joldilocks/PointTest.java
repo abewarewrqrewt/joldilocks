@@ -1,6 +1,9 @@
 package nl.dannyvanheumen.joldilocks;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
@@ -21,8 +24,10 @@ import static nl.dannyvanheumen.joldilocks.BigIntegers.THIRTYTWO;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.THREE;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOHUNDREDFIFTYSIX;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOTHOUSANDFORTYEIGHT;
+import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
@@ -209,5 +214,43 @@ public class PointTest {
         final Point newP = P.multiply(ZERO);
         assertEquals(expected.x(), newP.x());
         assertEquals(expected.y(), newP.y());
+    }
+
+    @Disabled("BUG: zero will not be successfully encoded due to zero-length byte array.")
+    @Test
+    public void testPointEncodeLowerBoundXY() {
+        final AffinePoint p = new AffinePoint(ZERO, ONE);
+        assertNotNull(p.encode());
+    }
+
+    @Test
+    public void testPointEncodeNegativeX() {
+        final AffinePoint p = new AffinePoint(BigInteger.valueOf(-1L), ZERO);
+        assertThrows(IllegalArgumentException.class, p::encode);
+    }
+
+    @Test
+    public void testPointEncodeNegativeY() {
+        final AffinePoint p = new AffinePoint(ZERO, BigInteger.valueOf(-1L));
+        assertThrows(IllegalArgumentException.class, p::encode);
+    }
+
+    @Test
+    public void testPointEncodeUpperBoundXY() {
+        final BigInteger modulusMinusOne = MODULUS.subtract(ONE);
+        final AffinePoint p = new AffinePoint(modulusMinusOne, modulusMinusOne);
+        assertNotNull(p.encode());
+    }
+
+    @Test
+    public void testPointEncodeMaxX() {
+        final AffinePoint p = new AffinePoint(MODULUS, ZERO);
+        assertThrows(IllegalArgumentException.class, p::encode);
+    }
+
+    @Test
+    public void testPointEncodeMaxY() {
+        final AffinePoint p = new AffinePoint(ZERO, MODULUS);
+        assertThrows(IllegalArgumentException.class, p::encode);
     }
 }
