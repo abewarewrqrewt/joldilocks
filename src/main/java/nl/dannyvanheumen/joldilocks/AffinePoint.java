@@ -11,7 +11,7 @@ import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 
 /**
  * AffinePoint is the pure representation of an Edwards point. This implementation does not contain any optimizations
- * for point addition.
+ * for point arithmetic.
  */
 final class AffinePoint implements Point {
 
@@ -46,9 +46,13 @@ final class AffinePoint implements Point {
     public AffinePoint add(final Point p) {
         final AffinePoint other = (AffinePoint) p;
         //    x3 = (x1*y2+y1*x2)/(c*(1+d*x1*x2*y1*y2))
-        final BigInteger resultX = this.x.multiply(other.y).add(this.y.multiply(other.x)).multiply(ONE.add(D.multiply(this.x).multiply(other.x).multiply(this.y).multiply(other.y)).modInverse(MODULUS)).mod(MODULUS);
+        final BigInteger resultX = this.x.multiply(other.y).add(this.y.multiply(other.x)).multiply(
+            ONE.add(D.multiply(this.x).multiply(other.x).multiply(this.y).multiply(other.y)).modInverse(MODULUS)
+        ).mod(MODULUS);
         //    y3 = (y1*y2-x1*x2)/(c*(1-d*x1*x2*y1*y2))
-        final BigInteger resultY = this.y.multiply(other.y).subtract(this.x.multiply(other.x)).multiply(ONE.subtract(D.multiply(this.x).multiply(other.x).multiply(this.y).multiply(other.y)).modInverse(MODULUS)).mod(MODULUS);
+        final BigInteger resultY = this.y.multiply(other.y).subtract(this.x.multiply(other.x)).multiply(
+            ONE.subtract(D.multiply(this.x).multiply(other.x).multiply(this.y).multiply(other.y)).modInverse(MODULUS)
+        ).mod(MODULUS);
         return new AffinePoint(resultX, resultY);
     }
 
