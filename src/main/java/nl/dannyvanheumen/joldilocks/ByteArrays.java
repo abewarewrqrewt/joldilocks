@@ -1,5 +1,6 @@
 package nl.dannyvanheumen.joldilocks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.security.MessageDigest;
 
@@ -45,9 +46,15 @@ final class ByteArrays {
      * @param a1 Array 1 in comparison
      * @param a2 Array 2 in comparison
      * @return Returns true if arrays are equal (either both null or both have equal contents), or false otherwise.
+     * @throws IllegalArgumentException Throws exception in case both arrays are the same instance. If this is an
+     *                                  expected case, handle this separately. The method throws an exception in order
+     *                                  to alert the developer for possible mistakes.
      */
-    // FIXME add unit tests, can we reasonably test constant-time-ness?
+    @CheckReturnValue
     static boolean equalsConstantTime(final byte[] a1, final byte[] a2) {
+        if (a1 == a2) {
+            throw new IllegalArgumentException("Both components in equality test are same instance.");
+        }
         return MessageDigest.isEqual(a1, a2);
     }
 }

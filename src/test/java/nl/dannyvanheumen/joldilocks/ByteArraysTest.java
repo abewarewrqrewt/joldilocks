@@ -2,6 +2,7 @@ package nl.dannyvanheumen.joldilocks;
 
 import org.junit.jupiter.api.Test;
 
+import static nl.dannyvanheumen.joldilocks.ByteArrays.equalsConstantTime;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthAtMost;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -35,25 +36,32 @@ public class ByteArraysTest {
     @Test
     public void testConstantTimeEqualsCorrectlyReturnsTrue() {
         final byte[] value = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-        assertTrue(ByteArrays.equalsConstantTime(value, value));
+        final byte[] value2 = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+        assertTrue(equalsConstantTime(value, value2));
+    }
+
+    @Test
+    public void testConstantTimeEqualsOnSingleByteArrayInstance() {
+        final byte[] data = new byte[10];
+        assertThrows(IllegalArgumentException.class, () -> equalsConstantTime(data, data));
     }
 
     @Test
     public void testConstantTimeEqualsCorrectlyReturnsFalse() {
         final byte[] value = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
         final byte[] falseValue = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14};
-        assertFalse(ByteArrays.equalsConstantTime(value, falseValue));
+        assertFalse(equalsConstantTime(value, falseValue));
     }
 
     @Test
     public void testConstantTimeEqualsNull() {
-        assertFalse(ByteArrays.equalsConstantTime(null, new byte[0]));
-        assertFalse(ByteArrays.equalsConstantTime(new byte[0], null));
+        assertFalse(equalsConstantTime(null, new byte[0]));
+        assertFalse(equalsConstantTime(new byte[0], null));
     }
 
     @Test
     public void testConstantTimeEqualsEmpty() {
-        assertTrue(ByteArrays.equalsConstantTime(new byte[0], new byte[0]));
+        assertTrue(equalsConstantTime(new byte[0], new byte[0]));
     }
 
     @Test
