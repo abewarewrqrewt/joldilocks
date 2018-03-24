@@ -6,26 +6,29 @@ Note that this implementation has, so far, only focused on minimal required func
 
 # Features and limitations
 
-Ed448-Goldilocks:
+A short summary of features and limitations, intended to give an impression of the current state of the project in more detail.
 
-* Point addition: ✓
-* Point subtraction: ❌
-* Point multiplication: ✓
-* Decaf: ❌
-* ...
+## Functional requirements
 
-RFC-8032: EdDSA
+* Ed448-Goldilocks:
+  * Point addition: ✓
+  * Point subtraction: ❌
+  * Point multiplication: ✓
+  * Decaf: ❌
+  * ...
 
-* Ed448: ✓
-* Ed448ph: ❌
-* Key generation: ❌
-* Encoding and decoding: ✓
-* Signature generation: ✓
-* Signature verification: ✓
+* RFC-8032: EdDSA
+  * Ed448: ✓
+  * Ed448ph: ❌
+  * Key generation: ❌
+  * Encoding and decoding: ✓
+  * Signature generation: ✓
+  * Signature verification: ✓
 
-Operational requirements:
+## Operational requirements
 
 * Optimized for performance: ❌
+  * Precompiled multiplication base table: ❌
   * Byte-arrays for internal coordinate representation: ❌
   * Extended Homogeneous point representation: ❌
   * Karatsuba multiplication: ✓  
