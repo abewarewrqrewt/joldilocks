@@ -38,6 +38,11 @@ A short summary of features and limitations, intended to give an impression of t
   * Constant-time multiplication: ❌  
   _E.g.: Montgomery ladder_
 
+## Developmental requirements
+
+* Stable API: ❌  
+  _Backward compatibility not guaranteed._
+
 # References
 
 * [Ed448-Goldilocks, a new elliptic curve](http://eprint.iacr.org/2015/625.pdf)
