@@ -4,17 +4,18 @@ This is an implementation of Ed448-Goldilocks for Java. At this level, the imple
 
 Note that this implementation has, so far, only focused on minimal required functionality for use in `otr4j`.
 
+__Status__: _Critical security requirements missing!_
+
 # Features and limitations
 
 A short summary of features and limitations, intended to give an impression of the current state of the project in more detail.
 
 ## Functional requirements
 
-* Ed448-Goldilocks:
+* Ed448-Goldilocks
   * Point addition: ✓
   * Point subtraction: ❌
   * Point multiplication: ✓
-  * Decaf: ❌
   * ...
 
 * RFC-8032: EdDSA
@@ -27,16 +28,20 @@ A short summary of features and limitations, intended to give an impression of t
 
 ## Operational requirements
 
-* Optimized for performance: ❌
+* Computational safety
+  * Decaf: ❌
+* Optimized for performance
   * Precompiled multiplication base table: ❌
   * Byte-arrays for internal coordinate representation: ❌
   * Extended Homogeneous point representation: ❌
   * Karatsuba multiplication: ✓  
   _Applied internally in Java, however may not be optimal._
-* Effort taken to mitigate potential side-channels: ❌
+* Effort taken to mitigate potential side-channels
   * Constant-time addition: ❌
   * Constant-time multiplication: ❌  
   _E.g.: Montgomery ladder_
+  * Constant-time equality: ❌
+  * In-memory representation of values (Elligator)
 
 ## Developmental requirements
 
