@@ -14,12 +14,12 @@ import static nl.dannyvanheumen.joldilocks.Ed448.multiplyByBase;
  */
 // FIXME Should we include the symmetric key that is used during generation?
 // FIXME what extra verification should we add for verifying the private key during construction.
-public final class Ed448KeyPair {
+public final class KeyPair {
 
     private final BigInteger privateKey;
     private final Point publicKey;
 
-    public Ed448KeyPair(final BigInteger privateKey) {
+    public KeyPair(final BigInteger privateKey) {
         this.privateKey = requireNonNull(privateKey);
         this.publicKey = multiplyByBase(privateKey);
     }
