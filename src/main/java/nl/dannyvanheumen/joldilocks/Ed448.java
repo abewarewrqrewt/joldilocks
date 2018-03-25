@@ -181,8 +181,7 @@ public final class Ed448 {
         clear(h);
         prune(publicKeySourceData);
         final BigInteger sk = decodeLittleEndian(publicKeySourceData);
-        final Point a = multiplyByBase(sk);
-        return new Ed448KeyPair(sk, a);
+        return new Ed448KeyPair(sk);
     }
 
     /**
