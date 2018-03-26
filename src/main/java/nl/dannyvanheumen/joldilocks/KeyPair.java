@@ -3,8 +3,8 @@ package nl.dannyvanheumen.joldilocks;
 import javax.annotation.Nonnull;
 import java.math.BigInteger;
 
-import static java.util.Objects.requireNonNull;
 import static nl.dannyvanheumen.joldilocks.Ed448.multiplyByBase;
+import static nl.dannyvanheumen.joldilocks.Scalars.requireValidSourceData;
 
 /**
  * In-memory representation of Ed448 key pair.
@@ -20,7 +20,7 @@ public final class KeyPair {
     private final Point publicKey;
 
     public KeyPair(final BigInteger privateKey) {
-        this.privateKey = requireNonNull(privateKey);
+        this.privateKey = requireValidSourceData(privateKey);
         this.publicKey = multiplyByBase(privateKey);
     }
 

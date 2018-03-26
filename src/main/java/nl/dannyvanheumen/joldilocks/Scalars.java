@@ -23,6 +23,44 @@ public final class Scalars {
     }
 
     /**
+     * Pruning of private key source data.
+     * <p>
+     * The procedure is described in RFC 8032, section 5.2.5. "Key Generation", step 2.
+     * <pre>
+     * 2.  Prune the buffer: The two least significant bits of the first
+     *     octet are cleared, all eight bits the last octet are cleared, and
+     *     the highest bit of the second to last octet is set.
+     * </pre>
+     *
+     * @param privateKeySourceData Public key source data.
+     * @throws IllegalArgumentException In case of invalid length of source data.
+     */
+    public static void prune(final byte[] privateKeySourceData) {
+        requireLengthExactly(57, privateKeySourceData);
+        privateKeySourceData[0] &= 0b11111100;
+        privateKeySourceData[56] = 0;
+        privateKeySourceData[55] |= 0b10000000;
+    }
+
+    /**
+     * Test that source data is valid for use as EdDSA private key.
+     *
+     * @param privateKeySourceData The private key source data.
+     * @return Original source data iff verified.
+     */
+    @Nonnull
+    public static BigInteger requireValidSourceData(final BigInteger privateKeySourceData) {
+        if (privateKeySourceData.testBit(0) || privateKeySourceData.testBit(1) || !privateKeySourceData.testBit(447)
+            || privateKeySourceData.testBit(448) || privateKeySourceData.testBit(449)
+            || privateKeySourceData.testBit(450) || privateKeySourceData.testBit(451)
+            || privateKeySourceData.testBit(452) || privateKeySourceData.testBit(453)
+            || privateKeySourceData.testBit(454) || privateKeySourceData.testBit(455)) {
+            throw new IllegalArgumentException("Invalid source data.");
+        }
+        return privateKeySourceData;
+    }
+
+    /**
      * Deserialize scalar value for Ed448 curve.
      *
      * @param value The serialized value of the scalar.

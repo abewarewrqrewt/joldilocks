@@ -141,24 +141,6 @@ public final class Points {
     }
 
     /**
-     * Pruning of public key source data.
-     * <p>
-     * The procedure is described in RFC 8032, section 5.2.5. "Key Generation", step 2.
-     * <pre>
-     * 2.  Prune the buffer: The two least significant bits of the first
-     *     octet are cleared, all eight bits the last octet are cleared, and
-     *     the highest bit of the second to last octet is set.
-     * </pre>
-     *
-     * @param publicKeySourceData Public key source data.
-     */
-    public static void prune(final byte[] publicKeySourceData) {
-        publicKeySourceData[0] &= 0b11111100;
-        publicKeySourceData[56] = 0;
-        publicKeySourceData[55] |= 0b10000000;
-    }
-
-    /**
      * Class that implements an identity point.
      */
     // TODO Should we even use this or throw it away in favor of consistent behavior? (safety)

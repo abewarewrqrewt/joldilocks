@@ -14,7 +14,10 @@ import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
 import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndian;
 import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndianTo;
+import static nl.dannyvanheumen.joldilocks.Scalars.prune;
 import static nl.dannyvanheumen.joldilocks.Scalars.requireNotZero;
+import static nl.dannyvanheumen.joldilocks.Scalars.requireValidSourceData;
+import static org.bouncycastle.util.Arrays.fill;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -138,5 +141,93 @@ public class ScalarsTest {
     @Test
     public void testEncodeLittleEndianToIllegalOffsetFails() {
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> encodeLittleEndianTo(new byte[0], -1, ONE));
+    }
+
+    @Test
+    public void testPruneNull() {
+        assertThrows(NullPointerException.class, () -> prune(null));
+    }
+
+    @Test
+    public void testPruneEmptyArray() {
+        assertThrows(IllegalArgumentException.class, () -> prune(new byte[0]));
+    }
+
+    @Test
+    public void tesPruneTooSmallArray() {
+        assertThrows(IllegalArgumentException.class, () -> prune(new byte[56]));
+    }
+
+    @Test
+    public void testPruneZeroArray() {
+        final byte[] expected = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte) 0b10000000, 0};
+        final byte[] data = new byte[57];
+        prune(data);
+        assertArrayEquals(expected, data);
+    }
+
+    @Test
+    public void testPruneFullArray() {
+        final byte[] expected = new byte[]{(byte) 0b11111100, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0};
+        final byte[] data = new byte[57];
+        fill(data, (byte) 0xff);
+        prune(data);
+        assertArrayEquals(expected, data);
+    }
+
+    @Test
+    public void testRequireValidSourceDataNull() {
+        assertThrows(NullPointerException.class, () -> requireValidSourceData(null));
+    }
+
+    @Test
+    public void testRequireValidSourceDataZeroValue() {
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(ZERO));
+    }
+
+    @Test
+    public void testRequireValidSourceDataMinimalValue() {
+        final byte[] data = new byte[57];
+        prune(data);
+        final BigInteger value = decodeLittleEndian(data);
+        assertSame(value, requireValidSourceData(value));
+    }
+
+    @Test
+    public void testRequireValidSourceDataMaximumValue() {
+        final byte[] data = new byte[57];
+        fill(data, (byte) 0xff);
+        prune(data);
+        final BigInteger value = decodeLittleEndian(data);
+        assertSame(value, requireValidSourceData(value));
+    }
+
+    @Test
+    public void testRequireValidSourceDataIndividualBits() {
+        final byte[] firstBitSet = new byte[]{0b000001, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte) 0b10000000, 0};
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(firstBitSet)));
+        final byte[] secondBitSet = new byte[]{0b000010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (byte) 0b10000000, 0};
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(secondBitSet)));
+        final byte[] almostSignificantByte = new byte[57];
+        prune(almostSignificantByte);
+        almostSignificantByte[55] &= 0b01111111;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(almostSignificantByte)));
+        final byte[] lastByte = new byte[57];
+        lastByte[56] = 0b00000001;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = 0b00000010;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = 0b00000100;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = 0b00001000;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = 0b00010000;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = 0b00100000;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = 0b01000000;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
+        lastByte[56] = (byte) 0b10000000;
+        assertThrows(IllegalArgumentException.class, () -> requireValidSourceData(decodeLittleEndian(lastByte)));
     }
 }
