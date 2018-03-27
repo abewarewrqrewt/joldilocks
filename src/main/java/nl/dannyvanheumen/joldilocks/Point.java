@@ -107,6 +107,20 @@ public interface Point {
     // FIXME Write test for encoding of Edwards point.
     @Nonnull
     default byte[] encode() {
+        final byte[] result = new byte[ENCODED_LENGTH_BYTES];
+        encodeTo(result, 0);
+        return result;
+    }
+
+    /**
+     * Encode Point according to RFC8032, using provided byte array as destination.
+     *
+     * @param dst    The destination location for the encoded point data. There should be at least 57 bytes of space
+     *               available starting from the offset.
+     * @param offset The starting offset within the destination array.
+     */
+    // FIXME Write test for encoding of Edwards point to specific destination.
+    default void encodeTo(@Nonnull final byte[] dst, final int offset) {
         final BigInteger x = this.x();
         final BigInteger y = this.y();
         if (x.compareTo(ZERO) < 0 || x.compareTo(MODULUS) >= 0 || y.compareTo(ZERO) < 0 || y.compareTo(MODULUS) >= 0) {
@@ -118,11 +132,9 @@ public interface Point {
         // encoding of the point, copy the least significant bit of the
         // x-coordinate to the most significant bit of the final octet."
         // -- RFC 8032
-        final byte[] encoded = new byte[ENCODED_LENGTH_BYTES];
-        encodeLittleEndianTo(encoded, 0, y);
+        encodeLittleEndianTo(dst, offset, y);
         // FIXME encoding fails in case x == 0 as it would serialize to zero-length byte array. Should be fixed.
         final int leastSignificantBit = encodeLittleEndian(x)[0] & LEAST_SIGNIFICANT_BIT_OF_BYTE;
-        encoded[ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
-        return encoded;
+        dst[offset+ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
     }
 }
