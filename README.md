@@ -4,7 +4,7 @@ This is an implementation of Ed448-Goldilocks for Java. At this level, the imple
 
 Note that this implementation has, so far, only focused on minimal required functionality for use in `otr4j`.
 
-__Status__: _Critical security requirements missing!_
+__Status__: _Critical security requirements missing._
 
 # Features and limitations
 
