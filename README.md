@@ -47,6 +47,8 @@ A short summary of features and limitations, intended to give an impression of t
 
 * Stable API: ❌  
   _Backward compatibility not guaranteed._
+* Trade-off for following spec exactly vs. Java GC behavior: ❌  
+  _Ed448-Goldilocks and RFC 8032 define storing certain data as byte-arrays. However, given a high-level language like Java, we should evaluate how this way of working interacts with the language's GC. If we produce many intermediate instances that needs to be garbage-collected due to the nature of the language, then it may be more appropriate to use a different strategy. (For example, keep different types of objects in memory.)_
 
 # References
 
