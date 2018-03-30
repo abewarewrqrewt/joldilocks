@@ -3,6 +3,8 @@ package nl.dannyvanheumen.joldilocks;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
@@ -26,6 +28,8 @@ import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOHUNDREDFIFTYSIX;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOTHOUSANDFORTYEIGHT;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
+import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -252,5 +256,29 @@ public class PointTest {
     public void testPointEncodeMaxY() {
         final AffinePoint p = new AffinePoint(ZERO, MODULUS);
         assertThrows(IllegalArgumentException.class, p::encode);
+    }
+
+    @Test
+    public void testPointEncodeToOutputStreamNull() {
+        final AffinePoint p = Ed448.P;
+        assertThrows(NullPointerException.class, () -> p.encodeTo(null));
+    }
+
+    @Test
+    public void testPointEncodeToOutputStreamValidPoint() throws IOException {
+        final AffinePoint p = Ed448.P;
+        final byte[] expected = p.encode();
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            p.encodeTo(out);
+            assertArrayEquals(expected, out.toByteArray());
+        }
+    }
+
+    @Test
+    public void testPointEncodeToSameBehaviorAsEncode() {
+        final AffinePoint p = Ed448.P;
+        final byte[] dst = new byte[ENCODED_LENGTH_BYTES];
+        p.encodeTo(dst, 0);
+        assertArrayEquals(p.encode(), dst);
     }
 }

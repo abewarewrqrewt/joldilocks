@@ -2,6 +2,8 @@ package nl.dannyvanheumen.joldilocks;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
@@ -141,6 +143,21 @@ public class ScalarsTest {
     @Test
     public void testEncodeLittleEndianToIllegalOffsetFails() {
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> encodeLittleEndianTo(new byte[0], -1, ONE));
+    }
+
+    @Test
+    public void testEncodeLittleEndianToNullStreamFails() {
+        assertThrows(NullPointerException.class, () -> encodeLittleEndianTo(null, ONE));
+    }
+
+    @Test
+    public void testEncodeLittleEndianToByteArrayOutputStream() throws IOException {
+        final BigInteger scalar = BigInteger.valueOf(4278322184L);
+        final byte[] expected = Scalars.encodeLittleEndian(scalar);
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            encodeLittleEndianTo(out, scalar);
+            assertArrayEquals(expected, out.toByteArray());
+        }
     }
 
     @Test

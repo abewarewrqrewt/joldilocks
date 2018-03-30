@@ -1,6 +1,8 @@
 package nl.dannyvanheumen.joldilocks;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ZERO;
@@ -8,6 +10,7 @@ import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Points.LEAST_SIGNIFICANT_BIT_OF_BYTE;
 import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndian;
 import static nl.dannyvanheumen.joldilocks.Scalars.encodeLittleEndianTo;
+import static org.bouncycastle.util.Arrays.clear;
 
 /**
  * The Point interface represents the generic Point on the Ed448-Goldilocks curve.
@@ -97,6 +100,18 @@ public interface Point {
             p = p.add(p);
         }
         return q;
+    }
+
+    /**
+     * Encode point to provided OutputStream.
+     *
+     * @param out The destination output stream.
+     * @throws IOException Failure to write to output stream.
+     */
+    default void encodeTo(@Nonnull final OutputStream out) throws IOException {
+        final byte[] dst = encode();
+        out.write(dst);
+        clear(dst);
     }
 
     /**

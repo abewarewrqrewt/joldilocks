@@ -1,10 +1,13 @@
 package nl.dannyvanheumen.joldilocks;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.ByteArrays.requireLengthExactly;
+import static org.bouncycastle.util.Arrays.clear;
 import static org.bouncycastle.util.Arrays.reverse;
 import static org.bouncycastle.util.BigIntegers.asUnsignedByteArray;
 import static org.bouncycastle.util.BigIntegers.fromUnsignedByteArray;
@@ -72,6 +75,19 @@ public final class Scalars {
         value[0] &= 0xfc;
         value[55] |= 0x80;
         return decodeLittleEndian(value);
+    }
+
+    /**
+     * Write encoded scalar value to provided output stream.
+     *
+     * @param out    The destination output stream.
+     * @param scalar The scalar value to be written.
+     * @throws IOException Failure to write to output stream.
+     */
+    public static void encodeLittleEndianTo(final OutputStream out, final BigInteger scalar) throws IOException {
+        final byte[] dst = encodeLittleEndian(scalar);
+        out.write(dst);
+        clear(dst);
     }
 
     /**
