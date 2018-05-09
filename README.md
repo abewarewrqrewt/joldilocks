@@ -21,7 +21,7 @@ A short summary of features and limitations, intended to give an impression of t
 * RFC-8032: EdDSA
   * Ed448: ✓
   * Ed448ph: ❌
-  * Key generation: ❌
+  * Key generation: ✓
   * Encoding and decoding: ✓
   * Signature generation: ✓
   * Signature verification: ✓
