@@ -30,6 +30,11 @@ public final class KeyPair {
     }
 
     @Nonnull
+    public BigInteger getPrivateKey() {
+        return privateKey;
+    }
+
+    @Nonnull
     public byte[] sign(final byte[] context, final byte[] message) {
         return Ed448.sign(this.privateKey, context, message);
     }
