@@ -174,14 +174,14 @@ public final class Ed448 {
      * @return Returns an Ed448 key pair based on the private key input.
      */
     @Nonnull
-    public static KeyPair generate(final byte[] symmetricKey) {
+    public static Point generatePublicKey(final byte[] symmetricKey) {
         final byte[] h = shake256(requireLengthExactly(PRIVATE_KEY_LENGTH_BYTES, symmetricKey),
             SIGNING_DIGEST_LENGTH_BYTES);
         final byte[] publicKeySourceData = copyOf(h, ENCODED_LENGTH_BYTES);
         clear(h);
         prune(publicKeySourceData);
         final BigInteger sk = decodeLittleEndian(publicKeySourceData);
-        return new KeyPair(sk);
+        return multiplyByBase(sk);
     }
 
     /**
