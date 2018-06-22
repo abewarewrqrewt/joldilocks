@@ -19,6 +19,7 @@ import static org.bouncycastle.util.Arrays.clear;
  * <p>
  * Several implementations of the Point interface exist for efficiency reasons.
  */
+// TODO add 'isIdentity' method such that implementations can define their own identity-check logic. (Different implementations have different checking logic.)
 public interface Point {
 
     /**
