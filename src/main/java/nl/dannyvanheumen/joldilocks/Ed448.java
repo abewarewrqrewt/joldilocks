@@ -3,9 +3,8 @@ package nl.dannyvanheumen.joldilocks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
@@ -30,16 +29,6 @@ import static org.bouncycastle.util.Arrays.copyOfRange;
  */
 // TODO: Need to implement precomputed base multiples to speed up computation?
 public final class Ed448 {
-
-    /**
-     * Length of private key in bytes.
-     */
-    private static final int PRIVATE_KEY_LENGTH_BYTES = 57;
-
-    /**
-     * Digest length in bytes, applies when producing digest of the private key.
-     */
-    private static final int SIGNING_DIGEST_LENGTH_BYTES = 114;
 
     /**
      * Cofactor of Ed448-Goldilocks curve.
@@ -84,9 +73,14 @@ public final class Ed448 {
     );
 
     /**
+     * Length of private key in bytes.
+     */
+    static final int SYMMETRIC_KEY_LENGTH_BYTES = 57;
+
+    /**
      * Prefix used in generating Ed448 signatures.
      */
-    private static final byte[] PREFIX_SIGED448_BYTES = "SigEd448".getBytes(StandardCharsets.US_ASCII);
+    private static final byte[] PREFIX_SIGED448_BYTES = new byte[]{'S', 'i', 'g', 'E', 'd', '4', '4', '8'};
 
     /**
      * Maximum length in bytes of context.
@@ -97,6 +91,11 @@ public final class Ed448 {
      * Length in bytes of signature.
      */
     private static final int SIGNATURE_LENGTH_BYTES = 114;
+
+    /**
+     * Digest length in bytes, applies when producing digest of the private key.
+     */
+    private static final int SIGNING_DIGEST_LENGTH_BYTES = 114;
 
     /**
      * Verify that given point is contained in the curve.
@@ -163,6 +162,20 @@ public final class Ed448 {
     }
 
     /**
+     * Generate symmetric key.
+     *
+     * @param random Secure random instance
+     * @return Returns random symmetric key.
+     */
+    // FIXME write unit tests
+    @Nonnull
+    public static byte[] generateSymmetricKey(final SecureRandom random) {
+        final byte[] key = new byte[SYMMETRIC_KEY_LENGTH_BYTES];
+        random.nextBytes(key);
+        return key;
+    }
+
+    /**
      * Generate Ed448 key pair according to OTRv4 spec. Which corresponds to RFC 8032 key generation section with the
      * exception of the final conversions to byte arrays.
      * <p>
@@ -173,33 +186,31 @@ public final class Ed448 {
      *                     from a cryptographically secure random source.
      * @return Returns an Ed448 key pair based on the private key input.
      */
+    // FIXME write unit tests
     @Nonnull
-    public static Point generatePublicKey(final byte[] symmetricKey) {
-        final byte[] h = shake256(requireLengthExactly(PRIVATE_KEY_LENGTH_BYTES, symmetricKey),
+    public static BigInteger generateSecretScalar(final byte[] symmetricKey) {
+        final byte[] h = shake256(requireLengthExactly(SYMMETRIC_KEY_LENGTH_BYTES, symmetricKey),
             SIGNING_DIGEST_LENGTH_BYTES);
-        final byte[] publicKeySourceData = copyOf(h, ENCODED_LENGTH_BYTES);
+        final byte[] secretKeySourceData = copyOf(h, ENCODED_LENGTH_BYTES);
         clear(h);
-        prune(publicKeySourceData);
-        final BigInteger sk = decodeLittleEndian(publicKeySourceData);
-        return multiplyByBase(sk);
+        prune(secretKeySourceData);
+        return decodeLittleEndian(secretKeySourceData);
     }
 
     /**
      * Sign an arbitrary length message.
      *
-     * @param sk      The secret key.
-     * @param context Context C, max 255 bytes.
-     * @param message Message, arbitrary length.
+     * @param symmetricKey The symmetric key used for signing.
+     * @param context      Context C, max 255 bytes.
+     * @param message      Message, arbitrary length.
      */
     @Nonnull
-    public static byte[] sign(final BigInteger sk, final byte[] context, final byte[] message) {
-        requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
+    public static byte[] sign(final byte[] symmetricKey, final byte[] context, final byte[] message) {
         requireNonNull(message);
         // "1. Hash the private key, 57 octets, using SHAKE256(x, 114).  Let h denote the resulting digest. Construct the
         //     secret scalar s from the first half of the digest, and the corresponding public key A, as described in the
         //     previous section.  Let prefix denote the second half of the hash digest, h[57],...,h[113]."
-        final byte[] skbytes = encodeLittleEndian(sk);
-        final byte[] h = shake256(skbytes, SIGNING_DIGEST_LENGTH_BYTES);
+        final byte[] h = shake256(symmetricKey, SIGNING_DIGEST_LENGTH_BYTES);
         final byte[] sbytes = copyOf(h, 57);
         final byte[] prefix = copyOfRange(h, 57, 114);
         prune(sbytes);
@@ -225,7 +236,6 @@ public final class Ed448 {
         // TODO: Should we always add one zero byte, or is there a possibility that we need to add more on occasion?
         final byte[] signature = concatenate(encodedPointR, encodedPointS, new byte[1]);
         // "7. Securely delete 'sym_key', 'sk', 'h', 'r' and 'k'."
-        clear(skbytes);
         clear(sbytes);
         clear(h);
         clear(bufferR);
@@ -246,7 +256,6 @@ public final class Ed448 {
      */
     public static void verify(final byte[] context, final Point publicKey, final byte[] message, final byte[] signature)
         throws SignatureVerificationFailedException {
-        requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, context);
         requireNonNull(message);
         requireLengthExactly(SIGNATURE_LENGTH_BYTES, signature);
         // "1. To verify a signature on a message M using context C and public key A, with F being 0 for Ed448 and 1 for
@@ -277,30 +286,15 @@ public final class Ed448 {
         clear(digest);
     }
 
-    /**
-     * Multiply scalar (e.g. secret key) by (pre-computed) base in order to derive a new point on the curve.
-     *
-     * @param scalar The scalar value, e.g. secret key.
-     * @return Returns a point that is the result of the multiplication with the base.
-     */
-    @Nonnull
-    public static Point multiplyByBase(final BigInteger scalar) {
-        return P.multiply(scalar);
-    }
-
     @Nonnull
     private static byte[] dom4(final byte[] y) {
-        requireLengthAtMost(255, y);
-        try {
-            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            buffer.write(PREFIX_SIGED448_BYTES);
-            buffer.write(0);
-            buffer.write(y.length);
-            buffer.write(y);
-            return buffer.toByteArray();
-        } catch (final IOException e) {
-            throw new IllegalStateException("BUG: Failed to compose byte array.", e);
-        }
+        requireLengthAtMost(CONTEXT_MAX_LENGTH_BYTES, y);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        buffer.write(PREFIX_SIGED448_BYTES, 0, PREFIX_SIGED448_BYTES.length);
+        buffer.write(0);
+        buffer.write(y.length);
+        buffer.write(y, 0, y.length);
+        return buffer.toByteArray();
     }
 
     /**
@@ -312,6 +306,17 @@ public final class Ed448 {
     @Nonnull
     private static byte[] ph(final byte[] x) {
         return x;
+    }
+
+    /**
+     * Multiply scalar (e.g. secret key) by (pre-computed) base in order to derive a new point on the curve.
+     *
+     * @param scalar The scalar value, e.g. secret key.
+     * @return Returns a point that is the result of the multiplication with the base.
+     */
+    @Nonnull
+    public static Point multiplyByBase(final BigInteger scalar) {
+        return P.multiply(scalar);
     }
 
     /**
