@@ -44,7 +44,15 @@ final class AffinePoint implements Point {
     @Nonnull
     @Override
     public AffinePoint add(final Point p) {
-        final AffinePoint other = (AffinePoint) p;
+        if (p instanceof AffinePoint) {
+            return add((AffinePoint) p);
+        } else {
+            return add(new AffinePoint(p.x(), p.y()));
+        }
+    }
+
+    @Nonnull
+    AffinePoint add(final AffinePoint other) {
         //    x3 = (x1*y2+y1*x2)/(c*(1+d*x1*x2*y1*y2))
         final BigInteger resultX = this.x.multiply(other.y).add(this.y.multiply(other.x)).multiply(
             ONE.add(D.multiply(this.x).multiply(other.x).multiply(this.y).multiply(other.y)).modInverse(MODULUS)
