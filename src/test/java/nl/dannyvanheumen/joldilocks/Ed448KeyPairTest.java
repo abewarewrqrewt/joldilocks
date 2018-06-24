@@ -4,15 +4,19 @@ import nl.dannyvanheumen.joldilocks.Points.InvalidDataException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 
 import static nl.dannyvanheumen.joldilocks.Ed448.multiplyByBase;
 import static nl.dannyvanheumen.joldilocks.Points.decode;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
 public final class Ed448KeyPairTest {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Test
     public void testSignBadArguments() {
@@ -104,5 +108,12 @@ public final class Ed448KeyPairTest {
         final Point generated = multiplyByBase(secretKey);
         assertEquals(expected.x(), generated.x());
         assertEquals(expected.y(), generated.y());
+    }
+
+    @Test
+    public void testSymmetricKeyIsSame() {
+        final byte[] expected = Ed448.generateSymmetricKey(RANDOM);
+        final Ed448KeyPair keypair = Ed448KeyPair.create(expected);
+        assertSame(expected, keypair.getSymmetricKey());
     }
 }

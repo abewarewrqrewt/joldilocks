@@ -37,7 +37,7 @@ public final class Ed448KeyPair {
     }
 
     @Nonnull
-    BigInteger getSecretKey() {
+    public BigInteger getSecretKey() {
         return secretKey;
     }
 
