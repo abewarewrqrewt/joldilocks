@@ -11,6 +11,7 @@
  */
 // TODO Modify the code such that public keys are persisted as byte arrays. (Is this necessary for security, otherwise in-memory objects are more convenient.)
 // TODO Consider temporary instances creating during calculations that may contain sensitive data. Can we reduce allocations/securely clear this data?
+// FIXME ensure builds are reproducible, binary-exact.
 @ParametersAreNonnullByDefault
 package nl.dannyvanheumen.joldilocks;
 
