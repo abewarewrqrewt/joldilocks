@@ -233,8 +233,10 @@ public final class Ed448 {
         // "6. Form the signature of the concatenation of R (57 octets) and the little-endian encoding of S (57 octets;
         //    the ten most significant bits of the final octets are always zero)."
         // Given that the top ten most significant bits are always zero, add single byte to get to total of 114 bytes.
-        // FIXME This is an actual issue! Should we always add one zero byte, or is there a possibility that we need to add more on occasion?
-        final byte[] signature = concatenate(encodedPointR, encodedPointS, new byte[1]);
+        // TODO verify if adding zero-bytes is the appropriate way to fix this possible case
+        final int bytesMissing = SIGNATURE_LENGTH_BYTES - encodedPointR.length - encodedPointS.length;
+        assert bytesMissing == 1 : "Fix is working. Commit this as it is needed.";
+        final byte[] signature = concatenate(encodedPointR, encodedPointS, new byte[bytesMissing]);
         assert signature.length == SIGNATURE_LENGTH_BYTES : "Generated signature is of unexpected size. This is a bug in the current code.";
         // "7. Securely delete 'sym_key', 'sk', 'h', 'r' and 'k'."
         clear(sbytes);
