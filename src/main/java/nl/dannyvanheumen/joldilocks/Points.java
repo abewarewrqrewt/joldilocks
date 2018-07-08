@@ -141,6 +141,20 @@ public final class Points {
     }
 
     /**
+     * Test equality of points.
+     * <p>
+     * Equals iff a.x == b.x and a.y == b.y.
+     *
+     * @param a The first point.
+     * @param b The second point.
+     * @return Returns true iff a == b.
+     */
+    @CheckReturnValue
+    public static boolean equals(@Nonnull final Point a, @Nonnull final Point b) {
+        return a.x().equals(b.x()) && a.y().equals(b.y());
+    }
+
+    /**
      * Class that implements an identity point.
      */
     // TODO Should we even use this or throw it away in favor of consistent behavior? (safety)

@@ -2,11 +2,13 @@ package nl.dannyvanheumen.joldilocks;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
-import static nl.dannyvanheumen.joldilocks.ExtendedPoint.*;
+import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
 import static nl.dannyvanheumen.joldilocks.Points.checkIdentity;
 import static nl.dannyvanheumen.joldilocks.Points.decode;
@@ -140,5 +142,42 @@ public class PointsTest {
         final AffinePoint converted = toAffine(p);
         assertEquals(p.x(), converted.x());
         assertEquals(p.y(), converted.y());
+    }
+
+    @Test
+    public void testEqualsNull() {
+        assertThrows(NullPointerException.class, () -> Points.equals(null, null));
+        assertThrows(NullPointerException.class, () -> Points.equals(P, null));
+        assertThrows(NullPointerException.class, () -> Points.equals(null, P));
+    }
+
+    @Test
+    public void testEqualsSamePoint() {
+        final AffinePoint p = new AffinePoint(BigInteger.ZERO, BigInteger.ONE);
+        assertTrue(Points.equals(p, p));
+    }
+
+    @Test
+    public void testEqualsAffinePoint() {
+        assertTrue(Points.equals(new AffinePoint(BigInteger.ZERO, BigInteger.ONE),
+            new AffinePoint(BigInteger.ZERO, BigInteger.ONE)));
+    }
+
+    @Test
+    public void testEqualsDifferentTypes() {
+        assertTrue(Points.equals(Points.identity(), new AffinePoint(BigInteger.ZERO, BigInteger.ONE)));
+    }
+
+    @Test
+    public void testEqualsDifferentTypes2() {
+        final AffinePoint p1 = new AffinePoint(BigInteger.ZERO, BigInteger.ONE);
+        final ExtendedPoint p2 = ExtendedPoint.fromEdwards(BigInteger.ZERO, BigInteger.ONE);
+        assertTrue(Points.equals(p1, p2));
+    }
+
+    @Test
+    public void testEqualsDifferentPoints() {
+        final AffinePoint p1 = new AffinePoint(BigInteger.ZERO, BigInteger.ONE);
+        assertFalse(Points.equals(p1, P));
     }
 }
