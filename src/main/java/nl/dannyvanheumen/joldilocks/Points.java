@@ -33,6 +33,17 @@ public final class Points {
     }
 
     /**
+     * Create a point.
+     *
+     * @param x X-component value
+     * @param y Y-component value
+     * @return Returns created instance.
+     */
+    public static Point createPoint(final BigInteger x, final BigInteger y) {
+        return new AffinePoint(x, y);
+    }
+
+    /**
      * Acquire Identity point.
      *
      * @return Returns identity point.

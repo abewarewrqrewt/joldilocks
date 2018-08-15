@@ -11,6 +11,7 @@ import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
 import static nl.dannyvanheumen.joldilocks.Points.checkIdentity;
+import static nl.dannyvanheumen.joldilocks.Points.createPoint;
 import static nl.dannyvanheumen.joldilocks.Points.decode;
 import static nl.dannyvanheumen.joldilocks.Points.identity;
 import static nl.dannyvanheumen.joldilocks.Points.requireNotIdentity;
@@ -179,5 +180,20 @@ public class PointsTest {
     public void testEqualsDifferentPoints() {
         final AffinePoint p1 = new AffinePoint(BigInteger.ZERO, BigInteger.ONE);
         assertFalse(Points.equals(p1, P));
+    }
+
+    @Test
+    public void testCreatePointNullX() {
+        assertThrows(NullPointerException.class, () -> createPoint(null, BigInteger.ONE));
+    }
+
+    @Test
+    public void testCreatePointNullY() {
+        assertThrows(NullPointerException.class, () -> createPoint(BigInteger.ONE, null));
+    }
+
+    @Test
+    public void testCreatePoint() {
+        assertNotNull(createPoint(BigInteger.ONE, BigInteger.ONE));
     }
 }
