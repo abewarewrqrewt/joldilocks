@@ -72,11 +72,14 @@ final class AffinePoint implements Point {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         final AffinePoint that = (AffinePoint) o;
-        return Objects.equals(x, that.x) &&
-            Objects.equals(y, that.y);
+        return Objects.equals(x, that.x) && Objects.equals(y, that.y);
     }
 
     @Override

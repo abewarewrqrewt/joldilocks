@@ -73,6 +73,16 @@ public interface Point {
     Point doubling();
 
     /**
+     * Equality of Edwards points.
+     * <p>
+     * Equality of points is defined as points having same Edwards x-coordinate and Edwards y-coordinate.
+     *
+     * @param o the other Edwards point
+     * @return Returns true iff Edwards points are equal.
+     */
+    boolean equals(Object o);
+
+    /**
      * Multiply the point with given scalar value.
      *
      * @param scalar the scalar value
@@ -151,6 +161,6 @@ public interface Point {
         encodeLittleEndianTo(dst, offset, y);
         // FIXME encoding fails in case x == 0 as it would serialize to zero-length byte array. Should be fixed.
         final int leastSignificantBit = encodeLittleEndian(x)[0] & LEAST_SIGNIFICANT_BIT_OF_BYTE;
-        dst[offset+ENCODED_LENGTH_BYTES-1] |= (leastSignificantBit << 7);
+        dst[offset + ENCODED_LENGTH_BYTES - 1] |= (leastSignificantBit << 7);
     }
 }
