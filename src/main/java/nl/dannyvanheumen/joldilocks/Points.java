@@ -115,12 +115,14 @@ public final class Points {
      */
     @Nonnull
     public static Point decode(final byte[] encodedPoint) throws InvalidDataException {
-        if (encodedPoint.length != ENCODED_LENGTH_BYTES) {
+        // Make a copy first, as we have the flip a bit and we do not want to modify the input data.
+        final byte[] encodedBytes = encodedPoint.clone();
+        if (encodedBytes.length != ENCODED_LENGTH_BYTES) {
             throw new InvalidDataException("Signature has invalid length. Expected exactly 57 bytes.");
         }
-        final int xBit = (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
-        encodedPoint[ENCODED_LENGTH_BYTES - 1] ^= (encodedPoint[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
-        final BigInteger y = decodeLittleEndian(encodedPoint);
+        final int xBit = (encodedBytes[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE) >> 7;
+        encodedBytes[ENCODED_LENGTH_BYTES - 1] ^= (encodedBytes[ENCODED_LENGTH_BYTES - 1] & MOST_SIGNIFICANT_BIT_OF_BYTE);
+        final BigInteger y = decodeLittleEndian(encodedBytes);
         if (y.compareTo(MODULUS) >= 0) {
             throw new InvalidDataException("Illegal value for Edwards coordinate y.");
         }
