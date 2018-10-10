@@ -109,10 +109,8 @@ public final class Scalars {
      * @param value  Value to encode.
      */
     public static void encodeLittleEndianTo(final byte[] dst, final int offset, final BigInteger value) {
-        final byte[] bigEndianBytes = asUnsignedByteArray(value);
-        for (int si = bigEndianBytes.length - 1, di = offset; si >= 0; si--) {
-            dst[di++] = bigEndianBytes[si];
-        }
+        final byte[] littleEndianBytes = encodeLittleEndian(value);
+        System.arraycopy(littleEndianBytes, 0, dst, offset, littleEndianBytes.length);
     }
 
     /**
