@@ -91,17 +91,6 @@ public final class Scalars {
     }
 
     /**
-     * Encode scalar value as little-endian.
-     *
-     * @param value scalar value
-     * @return Returns scalar as little-endian byte array.
-     */
-    @Nonnull
-    public static byte[] encodeLittleEndian(final BigInteger value) {
-        return reverse(asUnsignedByteArray(value));
-    }
-
-    /**
      * Encode scalar value as little-endian to provided destination byte array.
      *
      * @param dst    Destination byte array.
@@ -111,6 +100,17 @@ public final class Scalars {
     public static void encodeLittleEndianTo(final byte[] dst, final int offset, final BigInteger value) {
         final byte[] littleEndianBytes = encodeLittleEndian(value);
         System.arraycopy(littleEndianBytes, 0, dst, offset, littleEndianBytes.length);
+    }
+
+    /**
+     * Encode scalar value as little-endian.
+     *
+     * @param value scalar value
+     * @return Returns scalar as little-endian byte array.
+     */
+    @Nonnull
+    public static byte[] encodeLittleEndian(final BigInteger value) {
+        return reverse(asUnsignedByteArray(LENGTH_SCALAR_BYTES, value));
     }
 
     /**

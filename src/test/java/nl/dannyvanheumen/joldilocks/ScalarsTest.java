@@ -76,7 +76,7 @@ public class ScalarsTest {
 
     @Test
     public void testEncodeLittleEndian() {
-        final byte[] expected = new byte[]{0x8, 0x4, 0x2, (byte) 0xff};
+        final byte[] expected = new byte[] {0x8, 0x4, 0x2, (byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         assertArrayEquals(expected, encodeLittleEndian(BigInteger.valueOf(4278322184L)));
     }
 
@@ -87,13 +87,13 @@ public class ScalarsTest {
 
     @Test
     public void testEncodeLittleEndianZero() {
-        assertArrayEquals(new byte[0], encodeLittleEndian(ZERO));
+        assertArrayEquals(new byte[56], encodeLittleEndian(ZERO));
     }
 
     @Test
     public void testDecodeLittleEndian() {
         final BigInteger expected = BigInteger.valueOf(4278322184L);
-        assertEquals(expected, decodeLittleEndian(new byte[]{(byte) 0x8, 0x4, 0x2, (byte) 0xff}));
+        assertEquals(expected, decodeLittleEndian(new byte[] {0x8, 0x4, 0x2, (byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
     }
 
     @Test
@@ -108,16 +108,16 @@ public class ScalarsTest {
 
     @Test
     public void testEncodeLittleEndianTo() {
-        final byte[] expected = new byte[]{0x8, 0x4, 0x2, (byte) 0xff};
-        final byte[] dst = new byte[4];
+        final byte[] expected = new byte[] {0x8, 0x4, 0x2, (byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        final byte[] dst = new byte[56];
         encodeLittleEndianTo(dst, 0, BigInteger.valueOf(4278322184L));
         assertArrayEquals(expected, dst);
     }
 
     @Test
     public void testEncodeLittleEndianToOffset() {
-        final byte[] expected = new byte[]{0, 0, 0x8, 0x4, 0x2, (byte) 0xff};
-        final byte[] dst = new byte[6];
+        final byte[] expected = new byte[] {0, 0, 0x8, 0x4, 0x2, (byte) 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        final byte[] dst = new byte[58];
         encodeLittleEndianTo(dst, 2, BigInteger.valueOf(4278322184L));
         assertArrayEquals(expected, dst);
     }
@@ -130,9 +130,9 @@ public class ScalarsTest {
 
     @Test
     public void testEncodeLittleEndianToZero() {
-        final byte[] dst = new byte[0];
+        final byte[] dst = new byte[56];
         encodeLittleEndianTo(dst, 0, ZERO);
-        assertArrayEquals(new byte[0], dst);
+        assertArrayEquals(new byte[56], dst);
     }
 
     @Test
