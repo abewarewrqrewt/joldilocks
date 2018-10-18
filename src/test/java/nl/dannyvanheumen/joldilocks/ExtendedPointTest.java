@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
+import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -63,7 +64,15 @@ public class ExtendedPointTest {
     public void testPointNegation() {
         final Point negativeP = P.negate();
         assertNotNull(negativeP);
-        assertEquals(P.x().negate(), negativeP.x());
+        assertEquals(P.x().negate().mod(MODULUS), negativeP.x());
         assertEquals(P.y(), negativeP.y());
+    }
+
+    @Test
+    public void testPointDoubleNegation() {
+        final Point doubleNegatedP = P.negate().negate();
+        assertNotNull(doubleNegatedP);
+        assertEquals(P.x(), doubleNegatedP.x());
+        assertEquals(P.y(), doubleNegatedP.y());
     }
 }

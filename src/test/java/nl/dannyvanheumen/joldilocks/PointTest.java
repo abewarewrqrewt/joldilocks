@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
@@ -28,14 +29,19 @@ import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOHUNDREDFIFTYSIX;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOTHOUSANDFORTYEIGHT;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
 import static nl.dannyvanheumen.joldilocks.Ed448.P;
+import static nl.dannyvanheumen.joldilocks.Ed448.Q;
+import static nl.dannyvanheumen.joldilocks.Ed448.multiplyByBase;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
 public class PointTest {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Test
     public void testPointEncodingDecoding() throws Points.InvalidDataException {
@@ -225,6 +231,18 @@ public class PointTest {
     public void testPointEncodeLowerBoundXY() {
         final AffinePoint p = new AffinePoint(ZERO, ONE);
         assertNotNull(p.encode());
+    }
+
+    @Test
+    public void testPointDoubleNegation() {
+        final byte[] data = new byte[ENCODED_LENGTH_BYTES];
+        RANDOM.nextBytes(data);
+        final Point p = multiplyByBase(new BigInteger(1, data).mod(Q));
+        final Point pNegated = p.negate();
+        assertEquals(1, pNegated.x().signum());
+        assertNotEquals(p, pNegated);
+        final Point pNegatedNegated = pNegated.negate();
+        assertEquals(p, pNegatedNegated);
     }
 
     @Test

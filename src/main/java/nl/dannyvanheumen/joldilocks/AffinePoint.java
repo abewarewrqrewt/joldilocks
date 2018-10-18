@@ -38,7 +38,7 @@ final class AffinePoint implements Point {
     @Nonnull
     @Override
     public AffinePoint negate() {
-        return new AffinePoint(this.x.negate(), this.y);
+        return new AffinePoint(this.x.negate().mod(MODULUS), this.y);
     }
 
     @Nonnull
