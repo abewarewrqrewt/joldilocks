@@ -10,7 +10,6 @@ import java.security.SecureRandom;
 
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TEN;
-import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.EIGHT;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.FIVE;
@@ -25,6 +24,7 @@ import static nl.dannyvanheumen.joldilocks.BigIntegers.SIXTEEN;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.SIXTYFOUR;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.THIRTYTWO;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.THREE;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.TWO;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOHUNDREDFIFTYSIX;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.TWOTHOUSANDFORTYEIGHT;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
@@ -220,7 +220,7 @@ public class PointTest {
 
     @Test
     public void testPointMultiplicationZero() {
-        final ExtendedPoint expected = ExtendedPoint.fromEdwards(ZERO, ONE);
+        final AffinePoint expected = new AffinePoint(ZERO, ONE);
         final Point newP = P.multiply(ZERO);
         assertEquals(expected.x(), newP.x());
         assertEquals(expected.y(), newP.y());

@@ -13,7 +13,6 @@ import static nl.dannyvanheumen.joldilocks.Ed448.Q;
 import static nl.dannyvanheumen.joldilocks.Ed448.contains;
 import static nl.dannyvanheumen.joldilocks.Ed448.sign;
 import static nl.dannyvanheumen.joldilocks.Ed448.verify;
-import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
 import static nl.dannyvanheumen.joldilocks.Points.decode;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,28 +67,28 @@ public class Ed448Test {
 
     @Test
     public void testContainsZero() {
-        assertFalse(contains(fromEdwards(ZERO, ZERO)));
+        assertFalse(contains(new AffinePoint(ZERO, ZERO)));
     }
 
     // FIXME Not completely sure if this point is supposed to be on the curve ...
     @Test
     public void testContainsPoint1() {
-        assertTrue(contains(fromEdwards(ONE, ZERO)));
+        assertTrue(contains(new AffinePoint(ONE, ZERO)));
     }
 
     @Test
     public void testContainsPoint2() {
-        assertTrue(contains(fromEdwards(ONE.negate(), ZERO)));
+        assertTrue(contains(new AffinePoint(ONE.negate(), ZERO)));
     }
 
     @Test
     public void testContainsNeutralPoint() {
-        assertTrue(contains(fromEdwards(ZERO, ONE)));
+        assertTrue(contains(new AffinePoint(ZERO, ONE)));
     }
 
     @Test
     public void testArbitraryPoint() {
-        assertFalse(contains(fromEdwards(BigInteger.valueOf(1234), BigInteger.valueOf(-856382))));
+        assertFalse(contains(new AffinePoint(BigInteger.valueOf(1234), BigInteger.valueOf(-856382))));
     }
 
     @Test

@@ -3,11 +3,11 @@ package nl.dannyvanheumen.joldilocks;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
-import static java.math.BigInteger.TWO;
 
 final class BigIntegers {
 
-    static final BigInteger MINUS_TWO = BigInteger.valueOf(-2);
+    static final BigInteger TWO = BigInteger.valueOf(2L);
+    static final BigInteger MINUS_TWO = BigInteger.valueOf(-2L);
 
     static final BigInteger THREE = BigInteger.valueOf(3L);
     static final BigInteger FOUR = BigInteger.valueOf(4L);

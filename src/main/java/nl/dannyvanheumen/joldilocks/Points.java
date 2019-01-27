@@ -5,12 +5,11 @@ import javax.annotation.Nonnull;
 import java.math.BigInteger;
 
 import static java.math.BigInteger.ONE;
-import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
 import static nl.dannyvanheumen.joldilocks.BigIntegers.FOUR;
+import static nl.dannyvanheumen.joldilocks.BigIntegers.TWO;
 import static nl.dannyvanheumen.joldilocks.Ed448.D;
 import static nl.dannyvanheumen.joldilocks.Ed448.MODULUS;
-import static nl.dannyvanheumen.joldilocks.ExtendedPoint.fromEdwards;
 import static nl.dannyvanheumen.joldilocks.Point.ENCODED_LENGTH_BYTES;
 import static nl.dannyvanheumen.joldilocks.Scalars.decodeLittleEndian;
 
@@ -77,20 +76,6 @@ public final class Points {
     @CheckReturnValue
     public static boolean checkIdentity(final Point p) {
         return ZERO.equals(p.x()) && ONE.equals(p.y());
-    }
-
-    /**
-     * Convert arbitrary Edwards point type to Extended Homogeneous Projective point representation.
-     *
-     * @param point An arbitrary Edwards point.
-     * @return Returns ExtendedPoint with same Edwards coordinates.
-     */
-    @Nonnull
-    public static ExtendedPoint toExtended(final Point point) {
-        if (point instanceof ExtendedPoint) {
-            return (ExtendedPoint) point;
-        }
-        return fromEdwards(point.x(), point.y());
     }
 
     /**
